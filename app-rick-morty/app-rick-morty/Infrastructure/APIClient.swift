@@ -38,7 +38,6 @@ final class URLSessionAPIClient: APIClient {
                     return data
                 }.decode(type: responseType, decoder: decoder)
                 .mapError { error in
-                    if let apiClientError = error as? APIClientError { return apiClientError }
                     if error is DecodingError { return APIClientError.decodingError(error) }
                     return error
                 }.eraseToAnyPublisher()
