@@ -64,20 +64,17 @@ enum APIEndpoint {
         let url = baseURL.appendingPathComponent(path)
         
         guard var components = URLComponents(url: url, resolvingAgainstBaseURL: false) else {
-            return APIClientError.invalidURL
+            throw APIClientError.invalidURL
         }
         
         let queryItems = self.queryItems
-        if !queryItems.isEmpty {
-            components.queryItems = queryItems
-        }
         
         guard let fullURL = components.url else {
-            return APIClientError.invalidURL
+            throw APIClientError.invalidURL
         }
         
         var urlRequest = URLRequest(url: fullURL)
-        request.httpMethod = "GET"
+        urlRequest.httpMethod = "GET"
         
         return urlRequest
     }
