@@ -8,10 +8,14 @@
 import UIKit
 
 protocol RickAndMortyDependencies {
+    func resolve() -> APIClient
+    
     func resolve() -> EpisodeListViewController
     func resolve() -> EpisodeCoordinator
+    
     func resolve() -> CharacterListViewController
     func resolve() -> CharacterCoordinator
+    
     func resolve() -> LocationListViewController
     func resolve() -> LocationCoordinator
 }

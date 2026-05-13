@@ -11,6 +11,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
     
+    private lazy var apiClient: APIClient = URLSessionAPIClient()
+    
     private lazy var episodeCoordinator = DefaultEpisodeCoordinator(dependencies: self)
     private lazy var characterCoordinator = DefaultCharacterCoordinator(dependencies: self)
     private lazy var locationCoordinator = DefaultLocationCoordinator(dependencies: self)
@@ -28,6 +30,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 }
 
 extension SceneDelegate: RickAndMortyDependencies {
+    func resolve() -> APIClient {
+        return apiClient
+    }
+    
     func resolve() -> EpisodeListViewController {
         return EpisodeListViewController(dependencies: self)
     }
