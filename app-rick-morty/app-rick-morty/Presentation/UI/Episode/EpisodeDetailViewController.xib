@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="24765" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24743"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="EpisodeDetailViewController" customModule="app_rick_morty" customModuleProvider="target">
+            <connections>
+                <outlet property="airDateLabel" destination="cis-8K-u5F" id="9Cd-i7-rEv"/>
+                <outlet property="codeLabel" destination="YdL-ZM-nLZ" id="4qd-OJ-2uJ"/>
+                <outlet property="nameLabel" destination="U6h-eM-ZTn" id="bke-Zr-M7H"/>
+                <outlet property="relatedTableView" destination="kvd-OP-HKq" id="ZXK-56-e2Y"/>
+                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Episodio" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="U6h-eM-ZTn">
+                    <rect key="frame" x="16" y="134" width="70" height="21"/>
+                    <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="SE" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YdL-ZM-nLZ">
+                    <rect key="frame" x="16" y="171" width="20" height="21"/>
+                    <fontDescription key="fontDescription" type="system" weight="light" pointSize="17"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="kvd-OP-HKq">
+                    <rect key="frame" x="16" y="245" width="361" height="557"/>
+                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    <connections>
+                        <outlet property="dataSource" destination="-1" id="gkM-nb-Kik"/>
+                        <outlet property="delegate" destination="-1" id="4g0-zU-Yjn"/>
+                    </connections>
+                </tableView>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="AirDate" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cis-8K-u5F">
+                    <rect key="frame" x="16" y="208" width="57" height="21"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
+            </subviews>
+            <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
+            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+            <constraints>
+                <constraint firstItem="cis-8K-u5F" firstAttribute="top" secondItem="YdL-ZM-nLZ" secondAttribute="bottom" constant="16" id="1Fx-0h-YND"/>
+                <constraint firstItem="YdL-ZM-nLZ" firstAttribute="top" secondItem="U6h-eM-ZTn" secondAttribute="bottom" constant="16" id="76o-o1-6pR"/>
+                <constraint firstItem="YdL-ZM-nLZ" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="16" id="A4A-xO-bim"/>
+                <constraint firstItem="U6h-eM-ZTn" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="16" id="J2c-Ki-z4F"/>
+                <constraint firstItem="kvd-OP-HKq" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="16" id="ZOv-zg-Td7"/>
+                <constraint firstItem="cis-8K-u5F" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="16" id="cDZ-dd-UAB"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="kvd-OP-HKq" secondAttribute="trailing" constant="16" id="cYG-19-sf6"/>
+                <constraint firstItem="kvd-OP-HKq" firstAttribute="top" secondItem="cis-8K-u5F" secondAttribute="bottom" constant="16" id="ehL-IY-OEm"/>
+                <constraint firstItem="U6h-eM-ZTn" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" constant="16" id="tGd-a4-2KL"/>
+                <constraint firstAttribute="bottom" secondItem="kvd-OP-HKq" secondAttribute="bottom" constant="50" id="uqF-Bm-gd4"/>
+            </constraints>
+            <point key="canvasLocation" x="-16.030534351145036" y="108.45070422535211"/>
+        </view>
+    </objects>
+    <resources>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>

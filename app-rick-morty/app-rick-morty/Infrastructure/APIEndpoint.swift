@@ -68,6 +68,7 @@ enum APIEndpoint {
         }
         
         let queryItems = self.queryItems
+        components.queryItems = queryItems.isEmpty ? nil : queryItems
         
         guard let fullURL = components.url else {
             throw APIClientError.invalidURL

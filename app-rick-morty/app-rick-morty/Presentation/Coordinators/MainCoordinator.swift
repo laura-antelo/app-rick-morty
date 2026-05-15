@@ -26,8 +26,8 @@ final class DefaultMainCoordinator: MainCoordinator {
         let characterCoordinator: CharacterCoordinator = dependencies.resolve()
         let locationCoordinator: LocationCoordinator = dependencies.resolve()
         
-        let episodeViewController = characterCoordinator.start()
-        let characterViewController = episodeCoordinator.start()
+        let episodeViewController = episodeCoordinator.start()
+        let characterViewController = characterCoordinator.start()
         let locationViewController = locationCoordinator.start()
         
         let episodeNavigationController = makeNavigationController(rootViewController: episodeViewController, title: "Episodios", image: UIImage(systemName: "tv"))
