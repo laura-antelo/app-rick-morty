@@ -94,5 +94,10 @@ extension EpisodeDetailViewController: UITableViewDataSource {
 extension EpisodeDetailViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+        
+        guard let episode else { return }
+        
+        let characterId = episode.charactersIds[indexPath.row]
+        viewModel.didSelectCharacter(id: characterId)
     }
 }

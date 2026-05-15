@@ -136,6 +136,27 @@ extension CharacterDetailViewController: UITableViewDataSource {
 extension CharacterDetailViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+        
+        guard let character, let section = Section(rawValue: indexPath.section) else { return }
+        
+        switch section {
+        case .locations:
+            let locationId: Int?
+            
+            if indexPath.row == 0 {
+                locationId = character.origin.id
+            } else {
+                locationId = character.location.id
+            }
+            
+            guard let locationId else { return }
+            
+            viewModel.didSelectLocation(id: locationId)
+        case .episodes:
+            let episodeId = character.episodeIds[indexPath.row]
+            
+            viewModel.didSelectEpisode(id: episodeId)
+        }
     }
 }
 

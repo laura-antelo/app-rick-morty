@@ -94,5 +94,10 @@ extension LocationDetailViewController: UITableViewDataSource {
 extension LocationDetailViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+        
+        guard let location else { return }
+        
+        let characterId = location.residentsIds[indexPath.row]
+        viewModel.didSelectCharacter(id: characterId)
     }
 }

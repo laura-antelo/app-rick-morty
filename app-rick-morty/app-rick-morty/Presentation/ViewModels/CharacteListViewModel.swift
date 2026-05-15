@@ -13,6 +13,7 @@ protocol CharacterListViewModel {
     
     func viewDidLoad()
     func updateSearchText(_ text: String)
+    func didSelectCharacter(id: Int)
 }
 
 final class DefaultCharacterListViewModel: CharacterListViewModel {
@@ -37,6 +38,11 @@ final class DefaultCharacterListViewModel: CharacterListViewModel {
     
     func updateSearchText(_ text: String) {
         searchTextSubject.send(text)
+    }
+    
+    func didSelectCharacter(id: Int) {
+        let coordinator: CharacterCoordinator = dependencies.resolve()
+        coordinator.goToCharacterDetail(id: id)
     }
     
     private func bindSearch() {

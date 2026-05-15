@@ -13,6 +13,7 @@ protocol EpisodeListViewModel {
     
     func viewDidLoad()
     func updateSearchText(_ text: String)
+    func didSelectEpisode(id: Int)
 }
 
 final class DefaultEpisodeListViewModel: EpisodeListViewModel {
@@ -37,6 +38,11 @@ final class DefaultEpisodeListViewModel: EpisodeListViewModel {
     
     func updateSearchText(_ text: String) {
         searchTextSubject.send(text)
+    }
+    
+    func didSelectEpisode(id: Int) {
+        let coordinator: EpisodeCoordinator = dependencies.resolve()
+        coordinator.goToEpisodeDetail(id: id)
     }
     
     private func bindSearch() {

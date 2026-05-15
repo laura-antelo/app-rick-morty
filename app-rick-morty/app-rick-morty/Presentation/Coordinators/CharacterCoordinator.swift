@@ -7,7 +7,7 @@
 
 import UIKit
 
-protocol CharacterCoordinator {
+protocol CharacterCoordinator: NavegationCoordinator {
     func start() -> UIViewController
 }
 
@@ -25,5 +25,29 @@ final class DefaultCharacterCoordinator: CharacterCoordinator {
         characterViewContoller = viewController
         
         return viewController
+    }
+    
+    func goToCharacterDetail(id: Int) {
+        let viewModel = DefaultCharacterDetailViewModel(characterId: id, dependencies: dependencies, navigationCoordinator: self)
+        
+        let viewController = CharacterDetailViewController(viewModel: viewModel)
+        
+        characterViewContoller?.navigationController?.pushViewController(viewController, animated: true)
+    }
+    
+    func goToLocationDetail(id: Int) {
+        let viewModel = DefaultLocationDetailViewModel(locationId: id, dependencies: dependencies, navigationCoordinator: self)
+        
+        let viewController = LocationDetailViewController(viewModel: viewModel)
+        
+        characterViewContoller?.navigationController?.pushViewController(viewController, animated: true)
+    }
+    
+    func goToEpisodeDetail(id: Int) {
+        let viewModel = DefaultEpisodeDetailViewModel(episodeId: id, dependencies: dependencies, navigationCoordinator: self)
+        
+        let viewController = EpisodeDetailViewController(viewModel: viewModel)
+        
+        characterViewContoller?.navigationController?.pushViewController(viewController, animated: true)
     }
 }

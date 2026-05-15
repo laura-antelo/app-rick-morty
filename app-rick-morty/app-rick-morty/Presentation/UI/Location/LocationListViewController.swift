@@ -106,6 +106,11 @@ extension LocationListViewController: UITableViewDataSource{
 extension LocationListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+        
+        guard indexPath.section == 1 else { return }
+        
+        let location = locations[indexPath.row]
+        viewModel.didSelectLocation(id: location.id)
     }
 }
 
