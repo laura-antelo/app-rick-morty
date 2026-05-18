@@ -112,7 +112,9 @@ extension CharacterListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         
-        guard indexPath.section == 1 else { return }
+        guard let sectionType = SectionType(rawValue: indexPath.section), sectionType == .characters else {
+            return
+        }
         
         let character = characters[indexPath.row]
         viewModel.didSelectCharacter(id: character.id)

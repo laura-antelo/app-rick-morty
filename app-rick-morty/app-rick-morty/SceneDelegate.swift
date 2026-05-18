@@ -21,9 +21,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     private lazy var characterViewModel: CharacterListViewModel = DefaultCharacterListViewModel(dependencies: self)
     private lazy var locationViewModel: LocationListViewModel = DefaultLocationListViewModel(dependencies: self)
     
-    private lazy var episodeCoordinator = DefaultEpisodeCoordinator(dependencies: self)
-    private lazy var characterCoordinator = DefaultCharacterCoordinator(dependencies: self)
-    private lazy var locationCoordinator = DefaultLocationCoordinator(dependencies: self)
+    private lazy var episodeCoordinator: EpisodeCoordinator = DefaultEpisodeCoordinator(dependencies: self)
+    private lazy var characterCoordinator: CharacterCoordinator = DefaultCharacterCoordinator(dependencies: self)
+    private lazy var locationCoordinator: LocationCoordinator = DefaultLocationCoordinator(dependencies: self)
+    
+    private lazy var episodeDetailCoordinatorFactory: EpisodeDetailCoordinatorFactory = DefaultEpisodeDetailCoordinatorFactory(dependencies: self)
+    private lazy var characterDetailCoordinatorFactory: CharacterDetailCoordinatorFactory = DefaultCharacterDetailCoordinatorFactory(dependencies: self)
+    private lazy var locationDetailCoordinatorFactory: LocationDetailCoordinatorFactory = DefaultLocationDetailCoordinatorFactory(dependencies: self)
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
@@ -70,6 +74,10 @@ extension SceneDelegate: EpisodeDependencies {
     func resolve() -> EpisodeCoordinator {
         return episodeCoordinator
     }
+    
+    func resolve() -> any EpisodeDetailCoordinatorFactory {
+        return episodeDetailCoordinatorFactory
+    }
 }
     
 extension SceneDelegate: CharacterDependencies {
@@ -97,6 +105,10 @@ extension SceneDelegate: CharacterDependencies {
     func resolve() -> CharacterCoordinator {
         return characterCoordinator
     }
+    
+    func resolve() -> any CharacterDetailCoordinatorFactory {
+        return characterDetailCoordinatorFactory
+    }
 }
     
 extension SceneDelegate: LocationDependencies {
@@ -123,6 +135,10 @@ extension SceneDelegate: LocationDependencies {
     
     func resolve() -> LocationCoordinator {
         return locationCoordinator
+    }
+    
+    func resolve() -> any LocationDetailCoordinatorFactory {
+        return locationDetailCoordinatorFactory
     }
 }
 

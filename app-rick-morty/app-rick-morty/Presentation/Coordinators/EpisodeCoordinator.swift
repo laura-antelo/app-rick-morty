@@ -13,7 +13,7 @@ protocol EpisodeCoordinator: NavegationCoordinator {
 
 final class DefaultEpisodeCoordinator: EpisodeCoordinator {
     private let dependencies: RickAndMortyDependencies
-    private weak var episodeViewContoller: UIViewController?
+    private weak var episodeViewController: UIViewController?
     
     init(dependencies: RickAndMortyDependencies) {
         self.dependencies = dependencies
@@ -22,32 +22,35 @@ final class DefaultEpisodeCoordinator: EpisodeCoordinator {
     func start() -> UIViewController {
         let viewController: EpisodeListViewController = dependencies.resolve()
         
-        episodeViewContoller = viewController
+        episodeViewController = viewController
         
         return viewController
     }
     
     func goToCharacterDetail(id: Int) {
-        let viewModel = DefaultCharacterDetailViewModel(characterId: id, dependencies: dependencies, navigationCoordinator: self)
+        let characterDetailCoordinatorFactory: CharacterDetailCoordinatorFactory = dependencies.resolve()
+        let characterDetailCoordinator = characterDetailCoordinatorFactory.createNew(navegationCoordinator: self)
+        characterDetailCoordinator.setCharacterId(id)
+        let viewController = characterDetailCoordinator.start()
         
-        let viewController = CharacterDetailViewController(viewModel: viewModel)
-        
-        episodeViewContoller?.navigationController?.pushViewController(viewController, animated: true)
+        episodeViewController?.navigationController?.pushViewController(viewController, animated: true)
     }
     
     func goToLocationDetail(id: Int) {
-        let viewModel = DefaultLocationDetailViewModel(locationId: id, dependencies: dependencies, navigationCoordinator: self)
+        let locationDetailCoordinatorFactory: LocationDetailCoordinatorFactory = dependencies.resolve()
+        let locationDetailCoordinator = locationDetailCoordinatorFactory.createNew(navegationCoordinator: self)
+        locationDetailCoordinator.setLocationId(id)
+        let viewController = locationDetailCoordinator.start()
         
-        let viewController = LocationDetailViewController(viewModel: viewModel)
-        
-        episodeViewContoller?.navigationController?.pushViewController(viewController, animated: true)
+        episodeViewController?.navigationController?.pushViewController(viewController, animated: true)
     }
     
     func goToEpisodeDetail(id: Int) {
-        let viewModel = DefaultEpisodeDetailViewModel(episodeId: id, dependencies: dependencies, navigationCoordinator: self)
+        let episodeDetailCoordinatorFactory: EpisodeDetailCoordinatorFactory = dependencies.resolve()
+        let episodeDetailCoordinator = episodeDetailCoordinatorFactory.createNew(navegationCoordinator: self)
+        episodeDetailCoordinator.setEpisodeId(id)
+        let viewController = episodeDetailCoordinator.start()
         
-        let viewController = EpisodeDetailViewController(viewModel: viewModel)
-        
-        episodeViewContoller?.navigationController?.pushViewController(viewController, animated: true)
+        episodeViewController?.navigationController?.pushViewController(viewController, animated: true)
     }
 }

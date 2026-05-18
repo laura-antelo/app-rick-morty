@@ -20,6 +20,7 @@ protocol EpisodeDependencies {
     func resolve() -> EpisodeListViewModel
     func resolve() -> EpisodeListViewController
     func resolve() -> EpisodeCoordinator
+    func resolve() -> EpisodeDetailCoordinatorFactory
 }
 
 protocol CharacterDependencies {
@@ -29,6 +30,7 @@ protocol CharacterDependencies {
     func resolve() -> CharacterListViewModel
     func resolve() -> CharacterListViewController
     func resolve() -> CharacterCoordinator
+    func resolve() -> CharacterDetailCoordinatorFactory
 }
 protocol LocationDependencies {
     func resolve() -> LocationRepository
@@ -37,4 +39,5 @@ protocol LocationDependencies {
     func resolve() -> LocationListViewModel
     func resolve() -> LocationListViewController
     func resolve() -> LocationCoordinator
+    func resolve() -> LocationDetailCoordinatorFactory
 }
