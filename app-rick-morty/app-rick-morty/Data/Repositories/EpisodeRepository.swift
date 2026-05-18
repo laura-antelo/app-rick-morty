@@ -28,7 +28,7 @@ final class DefaultEpisodeRepository: EpisodeRepository {
             }.eraseToAnyPublisher()
     }
     
-    func getLocationDetail(id: Int) -> AnyPublisher<Episode, any Error> {
+    func getEpisodeDetail(id: Int) -> AnyPublisher<Episode, any Error> {
         api.request(.episodeDetail(id: id), responseType: EpisodeDTO.self).map { dto in
             dto.toDomain()
         }.eraseToAnyPublisher( )

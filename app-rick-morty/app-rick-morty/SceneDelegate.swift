@@ -13,6 +13,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     private lazy var apiClient: APIClient = URLSessionAPIClient()
     
+    private lazy var characterRepository: CharacterRepository = DefaultCharacterRepository(api: apiClient)
+    private lazy var episodeRepository: EpisodeRepository = DefaultEpisodeRepository(api: apiClient)
+    private lazy var locationRepository: LocationRepository = DefaultLocationRepository(api: apiClient)
+    
+    private lazy var episodeViewModel: EpisodeListViewModel = DefaultEpisodeListViewModel(dependencies: self)
+    private lazy var characterViewModel: CharacterListViewModel = DefaultCharacterListViewModel(dependencies: self)
+    private lazy var locationViewModel: LocationListViewModel = DefaultLocationListViewModel(dependencies: self)
+    
     private lazy var episodeCoordinator = DefaultEpisodeCoordinator(dependencies: self)
     private lazy var characterCoordinator = DefaultCharacterCoordinator(dependencies: self)
     private lazy var locationCoordinator = DefaultLocationCoordinator(dependencies: self)
@@ -34,24 +42,80 @@ extension SceneDelegate: RickAndMortyDependencies {
         return apiClient
     }
     
+    
+    // MARK: - EPISODIOS
+    
+    func resolve() -> any EpisodeRepository {
+        return episodeRepository
+    }
+    
+    func resolve() -> any GetEpisodesUseCase {
+        return DefaultGetEpisodesUseCase(repository: resolve())
+    }
+    
+    func resolve() -> any GetEpisodeDetailUseCase {
+        return DefaultGetEpisodeDetailUseCase(repository: resolve())
+    }
+    
+    func resolve() -> any EpisodeListViewModel {
+        return episodeViewModel
+    }
+    
     func resolve() -> EpisodeListViewController {
-        return EpisodeListViewController(dependencies: self)
+        return EpisodeListViewController(viewModel: episodeViewModel)
     }
     
     func resolve() -> EpisodeCoordinator {
         return episodeCoordinator
     }
     
+    
+    // MARK: - PERSONAJES
+    
+    func resolve() -> any CharacterRepository {
+        return characterRepository
+    }
+    
+    func resolve() -> any GetCharactersUseCase {
+        return DefaultGetCharactersUseCase(repository: resolve())
+    }
+    
+    func resolve() -> any GetCharacterDetailUseCase {
+        return DefaultGetCharacterDetailUseCase(repository: resolve())
+    }
+    
+    func resolve() -> any CharacterListViewModel {
+        return characterViewModel
+    }
+    
     func resolve() -> CharacterListViewController {
-        return CharacterListViewController(dependencies: self)
+        return CharacterListViewController(viewModel: characterViewModel)
     }
     
     func resolve() -> CharacterCoordinator {
         return characterCoordinator
     }
     
+    // MARK: - UBICACIONES
+    
+    func resolve() -> any LocationRepository {
+        return locationRepository
+    }
+    
+    func resolve() -> any GetLocationsUseCase {
+        return DefaultGetLocationsUseCase(repository: resolve())
+    }
+    
+    func resolve() -> any GetLocationDetailUseCase {
+        return DefaultGetLocationDetailUseCase(repository: resolve())
+    }
+    
+    func resolve() -> any LocationListViewModel {
+        return locationViewModel
+    }
+    
     func resolve() -> LocationListViewController {
-        return LocationListViewController(dependencies: self)
+        return LocationListViewController(viewModel: locationViewModel)
     }
     
     func resolve() -> LocationCoordinator {

@@ -37,7 +37,7 @@ final class DefaultLocationRepository: LocationRepository {
 
 private extension LocationDTO {
     func toDomain() -> Location {
-        Location(id: id, name: name, type: type, dimension: dimension, residentsIds: residents.map{ $0.apiResourceId } )
+        Location(id: id, name: name, type: type, dimension: dimension, residentsIds: residents.compactMap{ $0.apiResourceId } )
     }
 }
 
