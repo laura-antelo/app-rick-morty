@@ -17,7 +17,7 @@ protocol EpisodeListViewModel {
 }
 
 final class DefaultEpisodeListViewModel: EpisodeListViewModel {
-    private let dependencies: RickAndMortyDependencies
+    private let dependencies: EpisodeDependencies
     private var cancellables = Set<AnyCancellable>()
     
     private let episodesSubject = CurrentValueSubject<[Episode], Never>([])
@@ -27,7 +27,7 @@ final class DefaultEpisodeListViewModel: EpisodeListViewModel {
         episodesSubject.eraseToAnyPublisher()
     }
     
-    init(dependencies: RickAndMortyDependencies) {
+    init(dependencies: EpisodeDependencies) {
         self.dependencies = dependencies
     }
     

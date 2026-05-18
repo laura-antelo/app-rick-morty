@@ -18,6 +18,11 @@ class LocationListViewController: UIViewController {
     private var locations: [Location] = []
     private var currentSearchText: String = ""
     
+    private enum SectionType: Int, CaseIterable {
+        case search = 0
+        case locations = 1
+    }
+    
     init(viewModel: LocationListViewModel) {
         self.viewModel = viewModel
         super.init(nibName: "LocationListViewController", bundle: nil)
@@ -50,45 +55,53 @@ class LocationListViewController: UIViewController {
         viewModel.locationsPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] locations in
-                self?.locations = locations
-                self?.tableView.reloadData()
+                self?.updateLocations(locations)
             }
             .store(in: &cancellables)
+    }
+    
+    private func updateLocations(_ locations: [Location]) {
+        self.locations = locations
+        tableView.reloadData()
+    }
+    
+    private func updateSearchText(_ text: String){
+        currentSearchText = text
+        viewModel.updateSearchText(text)
     }
 }
 
 extension LocationListViewController: UITableViewDataSource{
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 2
+        return SectionType.allCases.count
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        guard let section = SectionType(rawValue: section) else { return 0 }
+        
         switch section {
-        case 0:
+        case .search:
             return 1
-        case 1:
+        case .locations:
             return locations.count
-        default :
-            return 0
         }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        switch indexPath.section {
-        case 0:
+        guard let section = SectionType(rawValue: indexPath.section) else { return UITableViewCell() }
+        
+        switch section {
+        case .search:
             return makeSearchCell(tableView: tableView, indexPath: indexPath)
-        case 1:
+        case .locations:
             return makeLocationCell(tableView: tableView, indexPath: indexPath)
-        default:
-            return UITableViewCell()
         }
     }
     
     private func makeSearchCell(tableView: UITableView, indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "SearchTableViewCell", for: indexPath) as! SearchTableViewCell
         cell.configure(text: currentSearchText) { [weak self] text in
-            self?.currentSearchText = text
-            self?.viewModel.updateSearchText(text)
+            self?.updateSearchText(text)
         }
         
         return cell

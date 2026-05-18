@@ -17,7 +17,7 @@ protocol LocationDetailViewModel {
 
 final class DefaultLocationDetailViewModel: LocationDetailViewModel {
     private let locationId: Int
-    private let dependencies: RickAndMortyDependencies
+    private let dependencies: LocationDependencies
     private weak var navigationCoordinator: NavegationCoordinator?
     
     private var cancellables = Set<AnyCancellable>()
@@ -27,7 +27,7 @@ final class DefaultLocationDetailViewModel: LocationDetailViewModel {
         locationSubject.eraseToAnyPublisher()
     }
     
-    init(locationId: Int, dependencies: RickAndMortyDependencies, navigationCoordinator: NavegationCoordinator) {
+    init(locationId: Int, dependencies: LocationDependencies, navigationCoordinator: NavegationCoordinator) {
         self.locationId = locationId
         self.dependencies = dependencies
         self.navigationCoordinator = navigationCoordinator

@@ -55,13 +55,17 @@ class LocationDetailViewController: UIViewController {
             .sink{ [weak self] location in
                 guard let location else {return}
                 
-                self?.location = location
-                self?.configure(with: location)
-                self?.relatedTableView.reloadData()
+                self?.updateUI(with: location)
             }.store(in: &cancellables)
     }
     
-    private func configure(with location: Location) {
+    private func updateUI(with location: Location) {
+        self.location = location
+        updateTexts(with: location)
+        relatedTableView.reloadData()
+    }
+    
+    private func updateTexts(with location: Location) {
         nameLabel.text = location.name
         typeLabel.text = "Tipo: \(location.type)"
         dimensionLabel.text = "Dimensión: \(location.dimension)"

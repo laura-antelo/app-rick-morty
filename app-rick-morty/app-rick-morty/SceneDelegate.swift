@@ -37,13 +37,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 }
 
-extension SceneDelegate: RickAndMortyDependencies {
+extension SceneDelegate: RickAndMortyDependencies {}
+
+extension SceneDelegate: APIDependencies {
     func resolve() -> APIClient {
         return apiClient
     }
+}
     
-    
-    // MARK: - EPISODIOS
+extension SceneDelegate: EpisodeDependencies {
     
     func resolve() -> any EpisodeRepository {
         return episodeRepository
@@ -68,9 +70,9 @@ extension SceneDelegate: RickAndMortyDependencies {
     func resolve() -> EpisodeCoordinator {
         return episodeCoordinator
     }
+}
     
-    
-    // MARK: - PERSONAJES
+extension SceneDelegate: CharacterDependencies {
     
     func resolve() -> any CharacterRepository {
         return characterRepository
@@ -95,8 +97,9 @@ extension SceneDelegate: RickAndMortyDependencies {
     func resolve() -> CharacterCoordinator {
         return characterCoordinator
     }
+}
     
-    // MARK: - UBICACIONES
+extension SceneDelegate: LocationDependencies {
     
     func resolve() -> any LocationRepository {
         return locationRepository

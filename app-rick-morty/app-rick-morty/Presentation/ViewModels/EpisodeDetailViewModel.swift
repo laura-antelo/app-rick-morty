@@ -17,7 +17,7 @@ protocol EpisodeDetailViewModel {
 
 final class DefaultEpisodeDetailViewModel: EpisodeDetailViewModel {
     private let episodeId: Int
-    private let dependencies: RickAndMortyDependencies
+    private let dependencies: EpisodeDependencies
     private weak var navigationCoordinator: NavegationCoordinator?
     
     private var cancellables = Set<AnyCancellable>()
@@ -27,7 +27,7 @@ final class DefaultEpisodeDetailViewModel: EpisodeDetailViewModel {
         episodeSubject.eraseToAnyPublisher()
     }
     
-    init(episodeId: Int, dependencies: RickAndMortyDependencies, navigationCoordinator: NavegationCoordinator) {
+    init(episodeId: Int, dependencies: EpisodeDependencies, navigationCoordinator: NavegationCoordinator) {
         self.episodeId = episodeId
         self.dependencies = dependencies
         self.navigationCoordinator = navigationCoordinator

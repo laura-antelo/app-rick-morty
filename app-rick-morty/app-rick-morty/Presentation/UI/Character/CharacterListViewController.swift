@@ -18,6 +18,11 @@ class CharacterListViewController: UIViewController {
     private var characters: [Character] = []
     private var currentSearchText: String = ""
     
+    private enum SectionType: Int, CaseIterable {
+        case search = 0
+        case characters = 1
+    }
+    
     init(viewModel: CharacterListViewModel) {
         self.viewModel = viewModel
         super.init(nibName: "CharacterListViewController", bundle: nil)
@@ -59,28 +64,28 @@ class CharacterListViewController: UIViewController {
 
 extension CharacterListViewController: UITableViewDataSource{
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 2
+        return SectionType.allCases.count
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        guard let section = SectionType(rawValue: section) else { return 0 }
+        
         switch section {
-        case 0:
+        case .search:
             return 1
-        case 1:
+        case .characters:
             return characters.count
-        default :
-            return 0
         }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        switch indexPath.section {
-        case 0:
+        guard let section = SectionType(rawValue: indexPath.section) else { return UITableViewCell() }
+        
+        switch section {
+        case .search:
             return makeSearchCell(tableView: tableView, indexPath: indexPath)
-        case 1:
+        case .characters:
             return makeCharacterCell(tableView: tableView, indexPath: indexPath)
-        default:
-            return UITableViewCell()
         }
     }
     

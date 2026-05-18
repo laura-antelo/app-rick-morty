@@ -18,7 +18,7 @@ protocol CharacterDetailViewModel {
 
 final class DefaultCharacterDetailViewModel: CharacterDetailViewModel {
     private let characterId: Int
-    private let dependencies: RickAndMortyDependencies
+    private let dependencies: CharacterDependencies
     private weak var navigationCoordinator: NavegationCoordinator?
     
     private var cancellables = Set<AnyCancellable>()
@@ -28,7 +28,7 @@ final class DefaultCharacterDetailViewModel: CharacterDetailViewModel {
         characterSubject.eraseToAnyPublisher()
     }
     
-    init(characterId: Int, dependencies: RickAndMortyDependencies, navigationCoordinator: NavegationCoordinator) {
+    init(characterId: Int, dependencies: CharacterDependencies, navigationCoordinator: NavegationCoordinator) {
         self.characterId = characterId
         self.dependencies = dependencies
         self.navigationCoordinator = navigationCoordinator
