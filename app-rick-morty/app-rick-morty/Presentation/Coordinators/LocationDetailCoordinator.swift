@@ -8,12 +8,11 @@
 import UIKit
 
 protocol LocationDetailCoordinator {
-    func setLocationId(_ id: Int)
     func start() -> UIViewController
 }
 
 protocol LocationDetailCoordinatorFactory {
-    func createNew(navegationCoordinator: NavegationCoordinator) -> LocationDetailCoordinator
+    func createNew(locationId: Int, navigationCoordinator: NavegationCoordinator) -> LocationDetailCoordinator
 }
 
 final class DefaultLocationDetailCoordinatorFactory: LocationDetailCoordinatorFactory {
@@ -23,30 +22,26 @@ final class DefaultLocationDetailCoordinatorFactory: LocationDetailCoordinatorFa
         self.dependencies = dependencies
     }
     
-    func createNew(navegationCoordinator: any NavegationCoordinator) -> any LocationDetailCoordinator {
-        return DefaultLocationDetailCoordinator(dependencies: dependencies, navegationCoordinator: navegationCoordinator)
+    func createNew(locationId: Int, navigationCoordinator: NavegationCoordinator) -> any LocationDetailCoordinator {
+        return DefaultLocationDetailCoordinator(dependencies: dependencies, locationId: locationId, navigationCoordinator: navigationCoordinator)
     }
 }
 
 
 final class DefaultLocationDetailCoordinator: LocationDetailCoordinator {
     private let dependencies: LocationDependencies
-    private weak var navegationCoordinator: NavegationCoordinator?
-    private var locationId: Int?
+    private let locationId: Int
+    private let navigationCoordinator: NavegationCoordinator
     
-    init(dependencies: LocationDependencies, navegationCoordinator: NavegationCoordinator){
+    init(dependencies: LocationDependencies, locationId: Int, navigationCoordinator: NavegationCoordinator){
         self.dependencies = dependencies
-        self.navegationCoordinator = navegationCoordinator
-    }
-    
-    func setLocationId(_ id: Int) {
-        locationId = id
+        self.locationId = locationId
+        self.navigationCoordinator = navigationCoordinator
     }
     
     func start() -> UIViewController {
-        guard let locationId, let navegationCoordinator else { fatalError("Dependencies not set") }
         
-        let viewModel = DefaultLocationDetailViewModel(locationId: locationId, dependencies: dependencies, navigationCoordinator: navegationCoordinator)
+        let viewModel = DefaultLocationDetailViewModel(locationId: locationId, dependencies: dependencies, navigationCoordinator: navigationCoordinator)
         
         return LocationDetailViewController(viewModel: viewModel)
     }

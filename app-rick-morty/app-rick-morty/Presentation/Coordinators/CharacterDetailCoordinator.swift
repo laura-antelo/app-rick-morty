@@ -7,12 +7,11 @@
 import UIKit
 
 protocol CharacterDetailCoordinator {
-    func setCharacterId(_ id: Int)
     func start() -> UIViewController
 }
 
 protocol CharacterDetailCoordinatorFactory {
-    func createNew(navegationCoordinator: NavegationCoordinator) -> CharacterDetailCoordinator
+    func createNew(characterId: Int, navigationCoordinator: NavegationCoordinator) -> CharacterDetailCoordinator
 }
 
 final class DefaultCharacterDetailCoordinatorFactory: CharacterDetailCoordinatorFactory {
@@ -22,30 +21,26 @@ final class DefaultCharacterDetailCoordinatorFactory: CharacterDetailCoordinator
         self.dependencies = dependencies
     }
     
-    func createNew(navegationCoordinator: NavegationCoordinator) -> any CharacterDetailCoordinator {
-        return DefaultCharacterDetailCoordinator(dependencies: dependencies, navegationCoordinator: navegationCoordinator)
+    func createNew(characterId: Int, navigationCoordinator: NavegationCoordinator) -> CharacterDetailCoordinator {
+        return DefaultCharacterDetailCoordinator(dependencies: dependencies, characterId: characterId, navigationCoordinator: navigationCoordinator)
     }
 }
 
 
 final class DefaultCharacterDetailCoordinator: CharacterDetailCoordinator {
+    
     private let dependencies: CharacterDependencies
-    private weak var navegationCoordinator: NavegationCoordinator?
-    private var characterId: Int?
+    private let characterId: Int
+    private let navigationCoordinator: NavegationCoordinator
     
-    init(dependencies: CharacterDependencies, navegationCoordinator: NavegationCoordinator){
+    init(dependencies: CharacterDependencies, characterId: Int, navigationCoordinator: NavegationCoordinator){
         self.dependencies = dependencies
-        self.navegationCoordinator = navegationCoordinator
-    }
-    
-    func setCharacterId(_ id: Int) {
-        characterId = id
+        self.characterId = characterId
+        self.navigationCoordinator = navigationCoordinator
     }
     
     func start() -> UIViewController {
-        guard let characterId, let navegationCoordinator else { fatalError("Dependencies not set") }
-        
-        let viewModel = DefaultCharacterDetailViewModel(characterId: characterId, dependencies: dependencies, navigationCoordinator: navegationCoordinator)
+        let viewModel = DefaultCharacterDetailViewModel(characterId: characterId, dependencies: dependencies, navigationCoordinator: navigationCoordinator)
         
         return CharacterDetailViewController(viewModel: viewModel)
     }

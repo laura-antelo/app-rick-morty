@@ -8,12 +8,11 @@
 import UIKit
 
 protocol EpisodeDetailCoordinator {
-    func setEpisodeId(_ id: Int)
     func start() -> UIViewController
 }
 
 protocol EpisodeDetailCoordinatorFactory {
-    func createNew(navegationCoordinator: NavegationCoordinator) -> EpisodeDetailCoordinator
+    func createNew(episodeId: Int, navigationCoordinator: NavegationCoordinator) -> EpisodeDetailCoordinator
 }
 
 final class DefaultEpisodeDetailCoordinatorFactory: EpisodeDetailCoordinatorFactory {
@@ -23,30 +22,26 @@ final class DefaultEpisodeDetailCoordinatorFactory: EpisodeDetailCoordinatorFact
         self.dependencies = dependencies
     }
     
-    func createNew(navegationCoordinator: any NavegationCoordinator) -> any EpisodeDetailCoordinator {
-        return DefaultEpisodeDetailCoordinator(dependencies: dependencies, navegationCoordinator: navegationCoordinator)
+    func createNew(episodeId: Int, navigationCoordinator: NavegationCoordinator) -> any EpisodeDetailCoordinator {
+        return DefaultEpisodeDetailCoordinator(dependencies: dependencies, episodeId: episodeId, navigationCoordinator: navigationCoordinator)
     }
 }
 
 
 final class DefaultEpisodeDetailCoordinator: EpisodeDetailCoordinator {
     private let dependencies: EpisodeDependencies
-    private weak var navegationCoordinator: NavegationCoordinator?
-    private var episodeId: Int?
+    private let episodeId: Int
+    private let navigationCoordinator: NavegationCoordinator
     
-    init(dependencies: EpisodeDependencies, navegationCoordinator: NavegationCoordinator){
+    init(dependencies: EpisodeDependencies, episodeId: Int, navigationCoordinator: NavegationCoordinator){
         self.dependencies = dependencies
-        self.navegationCoordinator = navegationCoordinator
-    }
-    
-    func setEpisodeId(_ id: Int) {
-        episodeId = id
+        self.episodeId = episodeId
+        self.navigationCoordinator = navigationCoordinator
     }
     
     func start() -> UIViewController {
-        guard let episodeId, let navegationCoordinator else { fatalError("Dependencies not set") }
         
-        let viewModel = DefaultEpisodeDetailViewModel(episodeId: episodeId, dependencies: dependencies, navigationCoordinator: navegationCoordinator)
+        let viewModel = DefaultEpisodeDetailViewModel(episodeId: episodeId, dependencies: dependencies, navigationCoordinator: navigationCoordinator)
         
         return EpisodeDetailViewController(viewModel: viewModel)
     }

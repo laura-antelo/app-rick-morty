@@ -29,8 +29,7 @@ final class DefaultLocationCoordinator: LocationCoordinator {
     
     func goToCharacterDetail(id: Int) {
         let characterDetailCoordinatorFactory: CharacterDetailCoordinatorFactory = dependencies.resolve()
-        let characterDetailCoordinator = characterDetailCoordinatorFactory.createNew(navegationCoordinator: self)
-        characterDetailCoordinator.setCharacterId(id)
+        let characterDetailCoordinator = characterDetailCoordinatorFactory.createNew(characterId: id, navigationCoordinator: self)
         let viewController = characterDetailCoordinator.start()
         
         locationViewController?.navigationController?.pushViewController(viewController, animated: true)
@@ -38,8 +37,7 @@ final class DefaultLocationCoordinator: LocationCoordinator {
     
     func goToLocationDetail(id: Int) {
         let locationDetailCoordinatorFactory: LocationDetailCoordinatorFactory = dependencies.resolve()
-        let locationDetailCoordinator = locationDetailCoordinatorFactory.createNew(navegationCoordinator: self)
-        locationDetailCoordinator.setLocationId(id)
+        let locationDetailCoordinator = locationDetailCoordinatorFactory.createNew(locationId: id, navigationCoordinator: self)
         let viewController = locationDetailCoordinator.start()
         
         locationViewController?.navigationController?.pushViewController(viewController, animated: true)
@@ -47,8 +45,7 @@ final class DefaultLocationCoordinator: LocationCoordinator {
     
     func goToEpisodeDetail(id: Int) {
         let episodeDetailCoordinatorFactory: EpisodeDetailCoordinatorFactory = dependencies.resolve()
-        let episodeDetailCoordinator = episodeDetailCoordinatorFactory.createNew(navegationCoordinator: self)
-        episodeDetailCoordinator.setEpisodeId(id)
+        let episodeDetailCoordinator = episodeDetailCoordinatorFactory.createNew(episodeId: id, navigationCoordinator: self)
         let viewController = episodeDetailCoordinator.start()
         
         locationViewController?.navigationController?.pushViewController(viewController, animated: true)
