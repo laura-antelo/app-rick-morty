@@ -25,7 +25,7 @@ final class GetLocationsUseCaseSpy: GetLocationsUseCase {
 final class GetLocationDetailUseCaseSpy: GetLocationDetailUseCase {
     var receivedId: Int?
     
-    var result: Result<Location, Error> = .success(TestRickAndMorty.location)
+    var result: Result<Location, Error> = .success(TestRickAndMortyData.location)
     
     func execute(id: Int) -> AnyPublisher<Location, any Error> {
         receivedId = id

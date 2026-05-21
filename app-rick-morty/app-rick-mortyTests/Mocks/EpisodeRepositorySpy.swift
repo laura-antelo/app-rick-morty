@@ -14,7 +14,7 @@ final class EpisodeRepositorySpy: EpisodeRepository {
     var getEpisodeDetailId: Int?
     
     var charactersResult: Result<[Episode], Error> = .success([])
-    var characterDetailResult: Result<Episode, Error> = .success(TestRickAndMortyData.character)
+    var characterDetailResult: Result<Episode, Error> = .success(TestRickAndMortyData.episode)
     
     func getEpisodes(page: Int?, name: String?) -> AnyPublisher<[Episode], any Error> {
         getEpisodesPage = page

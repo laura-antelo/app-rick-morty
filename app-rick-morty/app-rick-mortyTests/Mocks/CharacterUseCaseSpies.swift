@@ -25,7 +25,7 @@ final class GetCharactersUseCaseSpy: GetCharactersUseCase {
 final class GetCharacterDetailUseCaseSpy: GetCharacterDetailUseCase {
     var receivedId: Int?
     
-    var result: Result<Character, Error> = .success(TestRickAndMorty.character)
+    var result: Result<Character, Error> = .success(TestRickAndMortyData.character)
     
     func execute(id: Int) -> AnyPublisher<Character, any Error> {
         receivedId = id

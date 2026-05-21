@@ -25,9 +25,9 @@ final class GetEpisodesUseCaseSpy: GetEpisodesUseCase {
 final class GetEpisodeDetailUseCaseSpy: GetEpisodeDetailUseCase {
     var receivedId: Int?
     
-    var result: Result<Episode, Error> = .success(TestRickAndMorty.episode)
+    var result: Result<Episode, Error> = .success(TestRickAndMortyData.episode)
     
-    func execute(id: Int) -> AnyPublisher<Character, any Error> {
+    func execute(id: Int) -> AnyPublisher<Episode, any Error> {
         receivedId = id
         
         return result.publisher.eraseToAnyPublisher()
