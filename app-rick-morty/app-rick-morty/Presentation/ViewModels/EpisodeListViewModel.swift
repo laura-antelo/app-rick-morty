@@ -13,10 +13,11 @@ protocol EpisodeListViewModel {
     
     func viewDidLoad()
     func updateSearchText(_ text: String)
+    func didSelectEpisode(id: Int)
 }
 
 final class DefaultEpisodeListViewModel: EpisodeListViewModel {
-    private let dependencies: RickAndMortyDependencies
+    private let dependencies: EpisodeDependencies
     private var cancellables = Set<AnyCancellable>()
     
     private let episodesSubject = CurrentValueSubject<[Episode], Never>([])
@@ -26,7 +27,7 @@ final class DefaultEpisodeListViewModel: EpisodeListViewModel {
         episodesSubject.eraseToAnyPublisher()
     }
     
-    init(dependencies: RickAndMortyDependencies) {
+    init(dependencies: EpisodeDependencies) {
         self.dependencies = dependencies
     }
     
@@ -37,6 +38,11 @@ final class DefaultEpisodeListViewModel: EpisodeListViewModel {
     
     func updateSearchText(_ text: String) {
         searchTextSubject.send(text)
+    }
+    
+    func didSelectEpisode(id: Int) {
+        let coordinator: EpisodeCoordinator = dependencies.resolve()
+        coordinator.goToEpisodeDetail(id: id)
     }
     
     private func bindSearch() {

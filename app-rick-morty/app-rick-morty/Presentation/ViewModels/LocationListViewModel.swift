@@ -13,6 +13,7 @@ protocol LocationListViewModel {
     
     func viewDidLoad()
     func updateSearchText(_ text: String)
+    func didSelectLocation(id: Int)
 }
 
 final class DefaultLocationListViewModel: LocationListViewModel {
@@ -37,6 +38,11 @@ final class DefaultLocationListViewModel: LocationListViewModel {
     
     func updateSearchText(_ text: String) {
         searchTextSubject.send(text)
+    }
+    
+    func didSelectLocation(id: Int) {
+        let coordinator: LocationCoordinator = dependencies.resolve()
+        coordinator.goToLocationDetail(id: id)
     }
     
     private func bindSearch() {

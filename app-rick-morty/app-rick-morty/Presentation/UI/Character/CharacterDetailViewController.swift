@@ -25,7 +25,13 @@ class CharacterDetailViewController: UIViewController {
     private var character: Character?
     
     private enum Section: Int, CaseIterable {
-        case locations, episodes
+        case locations
+        case episodes
+    }
+    
+    private enum LocationRow: Int {
+        case origin = 0
+        case latestLocation = 1
     }
     
     init(viewModel: CharacterDetailViewModel) {
@@ -61,23 +67,39 @@ class CharacterDetailViewController: UIViewController {
     private func bindViewModel() {
         viewModel.characterPublisher
             .receive(on: DispatchQueue.main)
-            .sink{ [weak self] character in
-                guard let character else {return}
+            .sink { [weak self] character in
+                guard let character else { return }
                 
-                self?.character = character
-                self?.configure(with: character)
-                self?.relatedTableView.reloadData()
-            }.store(in: &cancellables)
+                self?.updateUI(with: character)
+            }
+            .store(in: &cancellables)
     }
     
-    private func configure(with character: Character) {
+    private func updateUI(with character: Character) {
+        self.character = character
+        updateTexts(with: character)
+        updateImages(with: character)
+        relatedTableView.reloadData()
+    }
+    
+    private func updateTexts(with character: Character) {
         nameLabel.text = character.name
         statusLabel.text = "Estado: \(character.status.displayText)"
         speciesLabel.text = "Especie: \(character.species)"
         typeLabel.text = character.type.isEmpty ? "" : "Tipo: \(character.type)"
         genderLabel.text = "Género: \(character.gender)"
+    }
     
+    private func updateImages(with character: Character) {
         characterImageView.image = UIImage(systemName: "person.crop.square")
+    }
+    
+    private func configureOriginCell(_ cell: LocationTableViewCell, origin: LocationReference) {
+        cell.configure(with: origin, title: "Origen")
+    }
+    
+    private func configureLocationCell(_ cell: LocationTableViewCell, location: LocationReference) {
+        cell.configure(with: location, title: "Última ubicación")
     }
 }
 
@@ -116,9 +138,9 @@ extension CharacterDetailViewController: UITableViewDataSource {
             guard let cell = tableView.dequeueReusableCell(withIdentifier: "LocationTableViewCell") as? LocationTableViewCell else { return UITableViewCell() }
             
             if indexPath.row == 0 {
-                cell.configure(with: character.origin, title: "Origen")
+                configureOriginCell(cell, origin: character.origin)
             } else {
-                cell.configure(with: character.location, title: "Última ubicación")
+                configureLocationCell(cell, location: character.location)
             }
             
             return cell
@@ -136,6 +158,27 @@ extension CharacterDetailViewController: UITableViewDataSource {
 extension CharacterDetailViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+        
+        guard let character, let section = Section(rawValue: indexPath.section) else { return }
+        
+        switch section {
+        case .locations:
+            let locationId: Int?
+            
+            if indexPath.row == 0 {
+                locationId = character.origin.id
+            } else {
+                locationId = character.location.id
+            }
+            
+            guard let locationId else { return }
+            
+            viewModel.didSelectLocation(id: locationId)
+        case .episodes:
+            let episodeId = character.episodeIds[indexPath.row]
+            
+            viewModel.didSelectEpisode(id: episodeId)
+        }
     }
 }
 

@@ -19,6 +19,11 @@ class EpisodeListViewController: UIViewController {
     private var episodes: [Episode] = []
     private var currentSearchText: String = ""
     
+    private enum SectionType: Int, CaseIterable {
+        case search = 0
+        case episodes = 1
+    }
+    
     init(viewModel: EpisodeListViewModel) {
         self.viewModel = viewModel
         super.init(nibName: "EpisodeListViewController", bundle: nil)
@@ -60,28 +65,28 @@ class EpisodeListViewController: UIViewController {
 
 extension EpisodeListViewController: UITableViewDataSource{
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 2
+        return SectionType.allCases.count
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        guard let section = SectionType(rawValue: section) else { return 0 }
+        
         switch section {
-        case 0:
+        case .search:
             return 1
-        case 1:
+        case .episodes:
             return episodes.count
-        default :
-            return 0
         }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        switch indexPath.section {
-        case 0:
+        guard let section = SectionType(rawValue: indexPath.section) else { return UITableViewCell() }
+        
+        switch section {
+        case .search:
             return makeSearchCell(tableView: tableView, indexPath: indexPath)
-        case 1:
+        case .episodes:
             return makeEpisodeCell(tableView: tableView, indexPath: indexPath)
-        default:
-            return UITableViewCell()
         }
     }
     
@@ -107,5 +112,12 @@ extension EpisodeListViewController: UITableViewDataSource{
 extension EpisodeListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+        
+        guard let sectionType = SectionType(rawValue: indexPath.section), sectionType == .episodes else {
+            return
+        }
+        
+        let episode = episodes[indexPath.row]
+        viewModel.didSelectEpisode(id: episode.id)
     }
 }

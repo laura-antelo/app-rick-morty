@@ -21,9 +21,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     private lazy var characterViewModel: CharacterListViewModel = DefaultCharacterListViewModel(dependencies: self)
     private lazy var locationViewModel: LocationListViewModel = DefaultLocationListViewModel(dependencies: self)
     
-    private lazy var episodeCoordinator = DefaultEpisodeCoordinator(dependencies: self)
-    private lazy var characterCoordinator = DefaultCharacterCoordinator(dependencies: self)
-    private lazy var locationCoordinator = DefaultLocationCoordinator(dependencies: self)
+    private lazy var episodeCoordinator: EpisodeCoordinator = DefaultEpisodeCoordinator(dependencies: self)
+    private lazy var characterCoordinator: CharacterCoordinator = DefaultCharacterCoordinator(dependencies: self)
+    private lazy var locationCoordinator: LocationCoordinator = DefaultLocationCoordinator(dependencies: self)
+    
+    private lazy var episodeDetailCoordinatorFactory: EpisodeDetailCoordinatorFactory = DefaultEpisodeDetailCoordinatorFactory(dependencies: self)
+    private lazy var characterDetailCoordinatorFactory: CharacterDetailCoordinatorFactory = DefaultCharacterDetailCoordinatorFactory(dependencies: self)
+    private lazy var locationDetailCoordinatorFactory: LocationDetailCoordinatorFactory = DefaultLocationDetailCoordinatorFactory(dependencies: self)
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
@@ -37,13 +41,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 }
 
-extension SceneDelegate: RickAndMortyDependencies {
+extension SceneDelegate: RickAndMortyDependencies {}
+
+extension SceneDelegate: APIDependencies {
     func resolve() -> APIClient {
         return apiClient
     }
+}
     
-    
-    // MARK: - EPISODIOS
+extension SceneDelegate: EpisodeDependencies {
     
     func resolve() -> any EpisodeRepository {
         return episodeRepository
@@ -69,8 +75,12 @@ extension SceneDelegate: RickAndMortyDependencies {
         return episodeCoordinator
     }
     
+    func resolve() -> any EpisodeDetailCoordinatorFactory {
+        return episodeDetailCoordinatorFactory
+    }
+}
     
-    // MARK: - PERSONAJES
+extension SceneDelegate: CharacterDependencies {
     
     func resolve() -> any CharacterRepository {
         return characterRepository
@@ -96,7 +106,12 @@ extension SceneDelegate: RickAndMortyDependencies {
         return characterCoordinator
     }
     
-    // MARK: - UBICACIONES
+    func resolve() -> any CharacterDetailCoordinatorFactory {
+        return characterDetailCoordinatorFactory
+    }
+}
+    
+extension SceneDelegate: LocationDependencies {
     
     func resolve() -> any LocationRepository {
         return locationRepository
@@ -120,6 +135,10 @@ extension SceneDelegate: RickAndMortyDependencies {
     
     func resolve() -> LocationCoordinator {
         return locationCoordinator
+    }
+    
+    func resolve() -> any LocationDetailCoordinatorFactory {
+        return locationDetailCoordinatorFactory
     }
 }
 

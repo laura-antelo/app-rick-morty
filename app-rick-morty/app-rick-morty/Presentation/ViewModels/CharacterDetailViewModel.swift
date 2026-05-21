@@ -12,26 +12,38 @@ protocol CharacterDetailViewModel {
     var characterPublisher: AnyPublisher<Character?, Never> { get }
     
     func viewDidLoad()
+    func didSelectLocation(id: Int)
+    func didSelectEpisode(id: Int)
 }
 
 final class DefaultCharacterDetailViewModel: CharacterDetailViewModel {
     private let characterId: Int
-    private let dependencies: RickAndMortyDependencies
-    private var cancellables = Set<AnyCancellable>()
+    private let dependencies: CharacterDependencies
+    private weak var navigationCoordinator: NavegationCoordinator?
     
+    private var cancellables = Set<AnyCancellable>()
     private let characterSubject = CurrentValueSubject<Character?, Never>(nil)
     
     var characterPublisher: AnyPublisher<Character?, Never> {
         characterSubject.eraseToAnyPublisher()
     }
     
-    init(characterId: Int, dependencies: RickAndMortyDependencies) {
+    init(characterId: Int, dependencies: CharacterDependencies, navigationCoordinator: NavegationCoordinator) {
         self.characterId = characterId
         self.dependencies = dependencies
+        self.navigationCoordinator = navigationCoordinator
     }
     
     func viewDidLoad() {
         loadCharacter()
+    }
+    
+    func didSelectEpisode(id: Int) {
+        navigationCoordinator?.goToEpisodeDetail(id: id)
+    }
+    
+    func didSelectLocation(id: Int) {
+        navigationCoordinator?.goToLocationDetail(id: id)
     }
     
     private func loadCharacter() {
