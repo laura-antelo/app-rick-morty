@@ -113,7 +113,9 @@ extension EpisodeListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         
-        guard indexPath.section == 1 else { return }
+        guard let sectionType = SectionType(rawValue: indexPath.section), sectionType == .episodes else {
+            return
+        }
         
         let episode = episodes[indexPath.row]
         viewModel.didSelectEpisode(id: episode.id)
