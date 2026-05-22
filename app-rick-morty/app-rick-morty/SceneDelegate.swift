@@ -17,6 +17,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     private lazy var episodeRepository: EpisodeRepository = DefaultEpisodeRepository(api: apiClient)
     private lazy var locationRepository: LocationRepository = DefaultLocationRepository(api: apiClient)
     
+    private lazy var favoriteRepository: FavoriteRepository = DefaultFavoriteRepository()
+    
     private lazy var episodeViewModel: EpisodeListViewModel = DefaultEpisodeListViewModel(dependencies: self)
     private lazy var characterViewModel: CharacterListViewModel = DefaultCharacterListViewModel(dependencies: self)
     private lazy var locationViewModel: LocationListViewModel = DefaultLocationListViewModel(dependencies: self)
@@ -46,6 +48,21 @@ extension SceneDelegate: RickAndMortyDependencies {}
 extension SceneDelegate: APIDependencies {
     func resolve() -> APIClient {
         return apiClient
+    }
+}
+
+extension SceneDelegate: FavoriteDependencies {
+    
+    func resolve() -> FavoriteRepository {
+        return favoriteRepository
+    }
+    
+    func resolve() -> any IsFavoriteUseCase {
+        return DefaultIsFavoriteUseCase(repository: favoriteRepository)
+    }
+    
+    func resolve() -> any ToggleFavoriteUseCase {
+        return DefaultToggleFavoriteUseCase(repository: favoriteRepository)
     }
 }
     
