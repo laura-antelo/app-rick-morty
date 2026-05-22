@@ -22,6 +22,7 @@ final class CharacterDependenciesMock: CharacterDependencies {
     let getCharacterUseCaseSpy = GetCharactersUseCaseSpy()
     let getCharacterDetailUseCaseSpy = GetCharacterDetailUseCaseSpy()
     let characterCoordinatorSpy = CoordinatorSpy()
+    let characterDetailCoordinatorFactorySpy = CharacterDetailCoordinatorFactorySpy()
     
     func resolve() -> CharacterRepository {
         characterRepositorySpy
@@ -46,13 +47,19 @@ final class CharacterDependenciesMock: CharacterDependencies {
     func resolve() -> CharacterCoordinator {
         characterCoordinatorSpy
     }
+    
+    func resolve() -> CharacterDetailCoordinatorFactory {
+        characterDetailCoordinatorFactorySpy
+    }
 }
 
 final class LocationDependenciesMock: LocationDependencies {
+    
     let locationRepositorySpy = LocationRepositorySpy()
     let getLocationUseCaseSpy = GetLocationsUseCaseSpy()
     let getLocationDetailUseCaseSpy = GetLocationDetailUseCaseSpy()
     let locationCoordinatorSpy = CoordinatorSpy()
+    let locationDetailCoordinatorFactorySpy = LocationDetailCoordinatorFactorySpy()
     
     func resolve() -> LocationRepository {
         locationRepositorySpy
@@ -77,6 +84,10 @@ final class LocationDependenciesMock: LocationDependencies {
     func resolve() -> LocationCoordinator {
         locationCoordinatorSpy
     }
+    
+    func resolve() -> LocationDetailCoordinatorFactory {
+        locationDetailCoordinatorFactorySpy
+    }
 }
 
 final class EpisodeDependenciesMock: EpisodeDependencies {
@@ -85,6 +96,7 @@ final class EpisodeDependenciesMock: EpisodeDependencies {
     let getEpisodesUseCaseSpy = GetEpisodesUseCaseSpy()
     let getEpisodeDetailUseCaseSpy = GetEpisodeDetailUseCaseSpy()
     let episodeCoordinatorSpy = CoordinatorSpy()
+    let episodeDetailCoordinatorFactorySpy = EpisodeDetailCoordinatorFactorySpy()
     
     func resolve() -> EpisodeRepository {
         episodeRepositorySpy
@@ -108,5 +120,9 @@ final class EpisodeDependenciesMock: EpisodeDependencies {
     
     func resolve() -> EpisodeCoordinator {
         episodeCoordinatorSpy
+    }
+    
+    func resolve() -> EpisodeDetailCoordinatorFactory {
+        episodeDetailCoordinatorFactorySpy
     }
 }

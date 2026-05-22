@@ -60,4 +60,29 @@ struct UseCaseTests {
         
         #expect(repository.getEpisodeDetailId == 1)
     }
+    
+    @MainActor
+    @Test func WhenGetLocationsUseCaseExecutes_ThenCallsRepository() async throws {
+        let repository = LocationRepositorySpy()
+        let sut = DefaultGetLocationsUseCase(repository: repository)
+        
+        let publisher = sut.execute(page: 1, name: "Earth")
+        
+        var iterator = publisher.values.makeAsyncIterator()
+        _ = try await iterator.next()
+        
+        #expect(repository.getLocationsPage == 1)
+    }
+    
+    @MainActor
+    @Test func WhenGetLocationDetailUseCaseExecutes_ThenCallsRepository() async throws {
+        let repository = LocationRepositorySpy()
+        let sut = DefaultGetLocationDetailUseCase(repository: repository)
+        
+        let publisher = sut.execute(id: 1)
+        var iterator = publisher.values.makeAsyncIterator()
+        _ = try await iterator.next()
+        
+        #expect(repository.getLocationDetailId == 1)
+    }
 }
