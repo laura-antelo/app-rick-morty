@@ -17,7 +17,7 @@ protocol LocationListViewModel {
 }
 
 final class DefaultLocationListViewModel: LocationListViewModel {
-    private let dependencies: RickAndMortyDependencies
+    private let dependencies: LocationDependencies
     private var cancellables = Set<AnyCancellable>()
     
     private let locationsSubject = CurrentValueSubject<[Location], Never>([])
@@ -27,7 +27,7 @@ final class DefaultLocationListViewModel: LocationListViewModel {
         locationsSubject.eraseToAnyPublisher()
     }
     
-    init(dependencies: RickAndMortyDependencies) {
+    init(dependencies: LocationDependencies) {
         self.dependencies = dependencies
     }
     
