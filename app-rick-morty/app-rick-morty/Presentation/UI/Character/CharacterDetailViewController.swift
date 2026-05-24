@@ -23,6 +23,7 @@ class CharacterDetailViewController: UIViewController {
     private var cancellables = Set<AnyCancellable>()
     
     private var character: Character?
+    private var relatedEpisodes: [Episode] = []
     
     private enum Section: Int, CaseIterable {
         case locations
@@ -73,6 +74,13 @@ class CharacterDetailViewController: UIViewController {
                 self?.updateUI(with: character)
             }
             .store(in: &cancellables)
+        
+        viewModel.relatedEpisodesPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] episodes in
+                self?.updateRelatedEpisodes(episodes)
+            }
+            .store(in: &cancellables)
     }
     
     private func updateUI(with character: Character) {
@@ -91,7 +99,12 @@ class CharacterDetailViewController: UIViewController {
     }
     
     private func updateImages(with character: Character) {
-        characterImageView.image = UIImage(systemName: "person.crop.square")
+        characterImageView.image = character.image ?? UIImage(systemName: "person.crop.square")
+    }
+    
+    private func updateRelatedEpisodes(_ episodes: [Episode]) {
+        relatedEpisodes = episodes
+        relatedTableView.reloadSections(IndexSet(integer: Section.episodes.rawValue), with: .none)
     }
     
     private func configureOriginCell(_ cell: LocationTableViewCell, origin: LocationReference) {
@@ -115,7 +128,7 @@ extension CharacterDetailViewController: UITableViewDataSource {
         case .locations:
             return 2
         case .episodes:
-            return character.episodeIds.count
+            return relatedEpisodes.count
         }
     }
     
@@ -147,8 +160,7 @@ extension CharacterDetailViewController: UITableViewDataSource {
         case .episodes:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: "EpisodeTableViewCell") as? EpisodeTableViewCell else { return UITableViewCell() }
             
-            let episodeId = character.episodeIds[indexPath.row]
-            cell.configure(episodeId: episodeId)
+            cell.configure(with: relatedEpisodes[indexPath.row])
             
             return cell
         }
@@ -175,9 +187,8 @@ extension CharacterDetailViewController: UITableViewDelegate {
             
             viewModel.didSelectLocation(id: locationId)
         case .episodes:
-            let episodeId = character.episodeIds[indexPath.row]
-            
-            viewModel.didSelectEpisode(id: episodeId)
+            let episode = relatedEpisodes[indexPath.row]
+            viewModel.didSelectEpisode(id: episode.id)
         }
     }
 }

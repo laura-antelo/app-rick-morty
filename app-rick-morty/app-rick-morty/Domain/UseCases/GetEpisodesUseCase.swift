@@ -9,7 +9,7 @@ import Foundation
 import Combine
 
 protocol GetEpisodesUseCase {
-    func execute(page: Int?, name: String?) -> AnyPublisher<[Episode], Error>
+    func execute(page: Int?, name: String?) -> AnyPublisher<PaginatedResult<Episode>, Error>
 }
 
 final class DefaultGetEpisodesUseCase: GetEpisodesUseCase {
@@ -19,7 +19,7 @@ final class DefaultGetEpisodesUseCase: GetEpisodesUseCase {
         self.repository = repository
     }
     
-    func execute(page: Int?, name: String?) -> AnyPublisher<[Episode], any Error> {
+    func execute(page: Int?, name: String?) -> AnyPublisher<PaginatedResult<Episode>, any Error> {
         return repository.getEpisodes(page: page, name: name)
     }
 }

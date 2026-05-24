@@ -18,7 +18,7 @@ class LocationDetailViewController: UIViewController {
     private let viewModel: LocationDetailViewModel
     private var cancellables = Set<AnyCancellable>()
     
-    private var location: Location?
+    private var relatedResidents: [Character] = []
     
     init(viewModel: LocationDetailViewModel) {
         self.viewModel = viewModel
@@ -55,20 +55,25 @@ class LocationDetailViewController: UIViewController {
             .sink{ [weak self] location in
                 guard let location else {return}
                 
-                self?.updateUI(with: location)
+                self?.updateTexts(with: location)
             }.store(in: &cancellables)
-    }
-    
-    private func updateUI(with location: Location) {
-        self.location = location
-        updateTexts(with: location)
-        relatedTableView.reloadData()
+        
+        viewModel.relatedResidentsPublisher
+            .receive(on: DispatchQueue.main)
+            .sink{ [weak self] residents in
+                self?.updateRelatedResidents(residents)
+            }.store(in: &cancellables)
     }
     
     private func updateTexts(with location: Location) {
         nameLabel.text = location.name
         typeLabel.text = "Tipo: \(location.type)"
         dimensionLabel.text = "Dimensión: \(location.dimension)"
+    }
+    
+    private func updateRelatedResidents(_ residents: [Character]){
+        relatedResidents = residents
+        relatedTableView.reloadData( )
     }
 }
 
@@ -78,7 +83,7 @@ extension LocationDetailViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        location?.residentsIds.count ?? 0
+        return relatedResidents.count
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
@@ -86,10 +91,9 @@ extension LocationDetailViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let location, let cell = tableView.dequeueReusableCell(withIdentifier: "CharacterTableViewCell", for: indexPath) as? CharacterTableViewCell else { return UITableViewCell() }
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "CharacterTableViewCell", for: indexPath) as? CharacterTableViewCell else { return UITableViewCell() }
         
-        let characterId = location.residentsIds[indexPath.row]
-        cell.configure(characterId: characterId)
+        cell.configure(with: relatedResidents[indexPath.row])
         
         return cell
     }
@@ -99,9 +103,8 @@ extension LocationDetailViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         
-        guard let location else { return }
+        let character = relatedResidents[indexPath.row]
         
-        let characterId = location.residentsIds[indexPath.row]
-        viewModel.didSelectCharacter(id: characterId)
+        viewModel.didSelectCharacter(id: character.id)
     }
 }

@@ -9,7 +9,7 @@ import Foundation
 import Combine
 
 protocol GetCharactersUseCase {
-    func execute(page: Int?, name: String?) -> AnyPublisher<[Character], Error>
+    func execute(page: Int?, name: String?) -> AnyPublisher<PaginatedResult<Character>, Error>
 }
 
 final class DefaultGetCharactersUseCase: GetCharactersUseCase {
@@ -19,7 +19,7 @@ final class DefaultGetCharactersUseCase: GetCharactersUseCase {
         self.repository = repository
     }
     
-    func execute(page: Int?, name: String?) -> AnyPublisher<[Character], any Error> {
+    func execute(page: Int?, name: String?) -> AnyPublisher<PaginatedResult<Character>, any Error> {
         return repository.getCharacters(page: page, name: name)
     }
 }

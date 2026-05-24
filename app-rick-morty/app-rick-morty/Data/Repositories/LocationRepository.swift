@@ -9,7 +9,7 @@ import Foundation
 import Combine
 
 protocol LocationRepository {
-    func getLocations(page: Int?, name: String?) -> AnyPublisher<[Location], Error>
+    func getLocations(page: Int?, name: String?) -> AnyPublisher<PaginatedResult<Location>, Error>
     func getLocationDetail(id: Int) -> AnyPublisher<Location, Error>
 }
 
@@ -21,10 +21,10 @@ final class DefaultLocationRepository: LocationRepository {
         self.api = api
     }
     
-    func getLocations(page: Int?, name: String?) -> AnyPublisher<[Location], any Error> {
+    func getLocations(page: Int?, name: String?) -> AnyPublisher<PaginatedResult<Location>, any Error> {
         api.request(.locations(page: page, name: name), responseType: ResponseDTO<LocationDTO>.self)
             .map { response in
-                response.results.map { $0.toDomain() }
+                PaginatedResult(items: response.results.map { $0.toDomain() }, hasNextPage: response.info.next != nil)
             }.eraseToAnyPublisher()
     }
     

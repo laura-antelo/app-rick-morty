@@ -7,9 +7,11 @@
 
 import Foundation
 import Combine
+import UIKit
 
 protocol APIClient {
     func request<T: Decodable>(_ endpoint: APIEndpoint, responseType: T.Type) -> AnyPublisher<T, Error>
+    func fetchImage(from urlString: String?) -> AnyPublisher<UIImage?, Error>
 }
 
 final class URLSessionAPIClient: APIClient {
@@ -44,6 +46,21 @@ final class URLSessionAPIClient: APIClient {
         } catch {
             return Fail(error: error).eraseToAnyPublisher()
         }
+    }
+    
+    func fetchImage(from urlString: String?) -> AnyPublisher<UIImage?, any Error> {
+        guard let urlString, let url = URL(string: urlString) else {
+            return Just(nil).setFailureType(to: Error.self).eraseToAnyPublisher()
+        }
+        
+        let request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData)
+        
+        return session.dataTaskPublisher(for: request)
+            .map(\.data)
+            .map { UIImage(data: $0) }
+            .mapError { $0 as Error }
+            .catch { _ in Just(nil).setFailureType(to: Error.self) }
+            .eraseToAnyPublisher()
     }
 }
 
