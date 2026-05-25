@@ -17,10 +17,12 @@ class LocationListViewController: UIViewController {
     
     private var locations: [Location] = []
     private var currentSearchText: String = ""
+    private var canLoadMore = false
     
     private enum SectionType: Int, CaseIterable {
         case search = 0
         case locations = 1
+        case loadMore = 2
     }
     
     init(viewModel: LocationListViewModel) {
@@ -49,6 +51,7 @@ class LocationListViewController: UIViewController {
     private func setupTableView(){
         tableView.register(UINib(nibName: "SearchTableViewCell", bundle: nil), forCellReuseIdentifier: "SearchTableViewCell")
         tableView.register(UINib(nibName: "LocationTableViewCell", bundle: nil), forCellReuseIdentifier: "LocationTableViewCell")
+        tableView.register(UINib(nibName: "LoadMoreTableViewCell", bundle: nil), forCellReuseIdentifier: "LoadMoreTableViewCell")
     }
     
     private func bindViewModel(){
@@ -58,16 +61,30 @@ class LocationListViewController: UIViewController {
                 self?.updateLocations(locations)
             }
             .store(in: &cancellables)
+        
+        viewModel.canLoadMorePublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] canLoadMore in
+                self?.updateCanLoadMore(canLoadMore)
+            }
+            .store(in: &cancellables)
     }
     
     private func updateLocations(_ locations: [Location]) {
         self.locations = locations
-        tableView.reloadData()
+        tableView.reloadSections(IndexSet(integer: SectionType.locations.rawValue), with: .none)
     }
     
     private func updateSearchText(_ text: String){
         currentSearchText = text
         viewModel.updateSearchText(text)
+    }
+    
+    private func updateCanLoadMore(_ canLoadMore: Bool) {
+        guard self.canLoadMore != canLoadMore else { return }
+        
+        self.canLoadMore = canLoadMore
+        tableView.reloadSections(IndexSet(integer: SectionType.loadMore.rawValue), with: .none)
     }
 }
 
@@ -84,6 +101,8 @@ extension LocationListViewController: UITableViewDataSource{
             return 1
         case .locations:
             return locations.count
+        case .loadMore:
+            return canLoadMore ? 1 : 0
         }
     }
     
@@ -95,6 +114,8 @@ extension LocationListViewController: UITableViewDataSource{
             return makeSearchCell(tableView: tableView, indexPath: indexPath)
         case .locations:
             return makeLocationCell(tableView: tableView, indexPath: indexPath)
+        case .loadMore:
+            return makeLoadMoreCell(tableView: tableView, indexPath: indexPath)
         }
     }
     
@@ -111,6 +132,16 @@ extension LocationListViewController: UITableViewDataSource{
         let cell = tableView.dequeueReusableCell(withIdentifier: "LocationTableViewCell", for: indexPath) as! LocationTableViewCell
         let location = locations[indexPath.row]
         cell.configure(with: location)
+        
+        return cell
+    }
+    
+    private func makeLoadMoreCell(tableView: UITableView, indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "LoadMoreTableViewCell", for: indexPath) as! LoadMoreTableViewCell
+                  
+        cell.configure { [weak self] in
+            self?.viewModel.loadMore()
+        }
         
         return cell
     }

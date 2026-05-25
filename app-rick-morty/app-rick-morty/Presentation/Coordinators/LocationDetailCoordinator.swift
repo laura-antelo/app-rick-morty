@@ -16,9 +16,9 @@ protocol LocationDetailCoordinatorFactory {
 }
 
 final class DefaultLocationDetailCoordinatorFactory: LocationDetailCoordinatorFactory {
-    private let dependencies: LocationDependencies
+    private let dependencies: RickAndMortyDependencies
     
-    init(dependencies: LocationDependencies) {
+    init(dependencies: RickAndMortyDependencies) {
         self.dependencies = dependencies
     }
     
@@ -29,11 +29,11 @@ final class DefaultLocationDetailCoordinatorFactory: LocationDetailCoordinatorFa
 
 
 final class DefaultLocationDetailCoordinator: LocationDetailCoordinator {
-    private let dependencies: LocationDependencies
+    private let dependencies: RickAndMortyDependencies
     private let locationId: Int
     private let navigationCoordinator: NavegationCoordinator
     
-    init(dependencies: LocationDependencies, locationId: Int, navigationCoordinator: NavegationCoordinator){
+    init(dependencies: RickAndMortyDependencies, locationId: Int, navigationCoordinator: NavegationCoordinator){
         self.dependencies = dependencies
         self.locationId = locationId
         self.navigationCoordinator = navigationCoordinator

@@ -16,14 +16,23 @@ class CharacterTableViewCell: UITableViewCell {
         super.awakeFromNib()
     }
 
-    func configure(with character: Character) {
-        nameLabel.text = character.name
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        nameLabel.text = nil
         characterImageView.image = UIImage(systemName: "person.crop.square")
     }
     
+    func configure(with character: Character) {
+        nameLabel.text = character.name
+        characterImageView.image = character.image
+    }
+    
+    /*
     func configure(characterId: Int){
         nameLabel.text = "Personaje \(characterId)"
         characterImageView.image = UIImage(systemName: "person.crop.square")
     }
+     */
     
 }

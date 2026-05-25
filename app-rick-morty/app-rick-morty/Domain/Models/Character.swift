@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 struct Character {
     let id: Int
@@ -18,6 +19,7 @@ struct Character {
     let location: LocationReference
     let imageURL: URL?
     let episodeIds: [Int]
+    let image: UIImage?
 }
 
 enum CharacterStatus: String {
