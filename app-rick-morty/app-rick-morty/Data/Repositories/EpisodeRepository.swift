@@ -9,7 +9,7 @@ import Foundation
 import Combine
 
 protocol EpisodeRepository {
-    func getEpisodes(page: Int?, name: String?) -> AnyPublisher<[Episode], Error>
+    func getEpisodes(page: Int?, name: String?) -> AnyPublisher<PaginatedResult<Episode>, Error>
     func getEpisodeDetail(id: Int) -> AnyPublisher<Episode, Error>
 }
 
@@ -21,10 +21,10 @@ final class DefaultEpisodeRepository: EpisodeRepository {
         self.api = api
     }
     
-    func getEpisodes(page: Int?, name: String?) -> AnyPublisher<[Episode], any Error> {
+    func getEpisodes(page: Int?, name: String?) -> AnyPublisher<PaginatedResult<Episode>, any Error> {
         api.request(.episodes(page: page, name: name), responseType: ResponseDTO<EpisodeDTO>.self)
             .map { response in
-                response.results.map { $0.toDomain() }
+                PaginatedResult(items: response.results.map { $0.toDomain() }, hasNextPage: response.info.next != nil)
             }.eraseToAnyPublisher()
     }
     

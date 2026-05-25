@@ -18,3 +18,8 @@ struct PageInfoDTO: Decodable {
     let next: String?
     let prev: String?
 }
+
+struct PaginatedResult<Item> {
+    let items: [Item]
+    let hasNextPage: Bool
+}

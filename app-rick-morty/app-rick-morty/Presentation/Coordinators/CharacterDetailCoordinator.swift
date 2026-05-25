@@ -15,9 +15,9 @@ protocol CharacterDetailCoordinatorFactory {
 }
 
 final class DefaultCharacterDetailCoordinatorFactory: CharacterDetailCoordinatorFactory {
-    private let dependencies: CharacterDependencies
+    private let dependencies: RickAndMortyDependencies
     
-    init(dependencies: CharacterDependencies) {
+    init(dependencies: RickAndMortyDependencies) {
         self.dependencies = dependencies
     }
     
@@ -29,11 +29,11 @@ final class DefaultCharacterDetailCoordinatorFactory: CharacterDetailCoordinator
 
 final class DefaultCharacterDetailCoordinator: CharacterDetailCoordinator {
     
-    private let dependencies: CharacterDependencies
+    private let dependencies: RickAndMortyDependencies
     private let characterId: Int
     private let navigationCoordinator: NavegationCoordinator
     
-    init(dependencies: CharacterDependencies, characterId: Int, navigationCoordinator: NavegationCoordinator){
+    init(dependencies: RickAndMortyDependencies, characterId: Int, navigationCoordinator: NavegationCoordinator){
         self.dependencies = dependencies
         self.characterId = characterId
         self.navigationCoordinator = navigationCoordinator

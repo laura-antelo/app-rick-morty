@@ -9,7 +9,7 @@ import Foundation
 import Combine
 
 protocol GetLocationsUseCase {
-    func execute(page: Int?, name: String?) -> AnyPublisher<[Location], Error>
+    func execute(page: Int?, name: String?) -> AnyPublisher<PaginatedResult<Location>, Error>
 }
 
 final class DefaultGetLocationsUseCase: GetLocationsUseCase {
@@ -19,7 +19,7 @@ final class DefaultGetLocationsUseCase: GetLocationsUseCase {
         self.repository = repository
     }
     
-    func execute(page: Int?, name: String?) -> AnyPublisher<[Location], any Error> {
+    func execute(page: Int?, name: String?) -> AnyPublisher<PaginatedResult<Location>, any Error> {
         return repository.getLocations(page: page, name: name)
     }
 }

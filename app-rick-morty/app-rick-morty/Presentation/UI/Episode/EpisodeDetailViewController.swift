@@ -18,7 +18,7 @@ class EpisodeDetailViewController: UIViewController {
     private let viewModel: EpisodeDetailViewModel
     private var cancellables = Set<AnyCancellable>()
     
-    private var episode: Episode?
+    private var relatedCharacters: [Character] = []
     
     init(viewModel: EpisodeDetailViewModel) {
         self.viewModel = viewModel
@@ -53,11 +53,14 @@ class EpisodeDetailViewController: UIViewController {
         viewModel.episodePublisher
             .receive(on: DispatchQueue.main)
             .sink{ [weak self] episode in
-                guard let episode else {return}
-                
-                self?.episode = episode
+                guard let episode else { return }
                 self?.configure(with: episode)
-                self?.relatedTableView.reloadData()
+            }.store(in: &cancellables)
+        
+        viewModel.relatedCharactersPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] characters in
+                self?.updateRelatedCharacters(characters)
             }.store(in: &cancellables)
     }
     
@@ -65,6 +68,11 @@ class EpisodeDetailViewController: UIViewController {
         nameLabel.text = episode.name
         codeLabel.text = "\(episode.code)"
         airDateLabel.text = "Fecha de emisión: \(episode.airDate)"
+    }
+    
+    private func updateRelatedCharacters(_ characters: [Character]) {
+        self.relatedCharacters = characters
+        self.relatedTableView.reloadData()
     }
 }
 
@@ -74,7 +82,7 @@ extension EpisodeDetailViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        episode?.charactersIds.count ?? 0
+        return relatedCharacters.count
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
@@ -82,10 +90,9 @@ extension EpisodeDetailViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let episode, let cell = tableView.dequeueReusableCell(withIdentifier: "CharacterTableViewCell", for: indexPath) as? CharacterTableViewCell else { return UITableViewCell() }
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "CharacterTableViewCell", for: indexPath) as? CharacterTableViewCell else { return UITableViewCell() }
         
-        let characterId = episode.charactersIds[indexPath.row]
-        cell.configure(characterId: characterId)
+        cell.configure(with: relatedCharacters[indexPath.row])
         
         return cell
     }
@@ -95,9 +102,8 @@ extension EpisodeDetailViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         
-        guard let episode else { return }
+        let character = relatedCharacters[indexPath.row]
         
-        let characterId = episode.charactersIds[indexPath.row]
-        viewModel.didSelectCharacter(id: characterId)
+        viewModel.didSelectCharacter(id: character.id)
     }
 }

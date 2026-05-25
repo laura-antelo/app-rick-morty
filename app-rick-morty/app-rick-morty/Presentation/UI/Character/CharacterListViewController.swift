@@ -17,10 +17,12 @@ class CharacterListViewController: UIViewController {
     
     private var characters: [Character] = []
     private var currentSearchText: String = ""
+    private var canLoadMore = false
     
     private enum SectionType: Int, CaseIterable {
         case search = 0
         case characters = 1
+        case loadMore = 2
     }
     
     init(viewModel: CharacterListViewModel) {
@@ -49,16 +51,40 @@ class CharacterListViewController: UIViewController {
     private func setupTableView(){
         tableView.register(UINib(nibName: "SearchTableViewCell", bundle: nil), forCellReuseIdentifier: "SearchTableViewCell")
         tableView.register(UINib(nibName: "CharacterTableViewCell", bundle: nil), forCellReuseIdentifier: "CharacterTableViewCell")
+        tableView.register(UINib(nibName: "LoadMoreTableViewCell", bundle: nil), forCellReuseIdentifier: "LoadMoreTableViewCell")
     }
     
     private func bindViewModel(){
         viewModel.charactersPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] characters in
-                self?.characters = characters
-                self?.tableView.reloadData()
+                self?.updateCharacters(characters)
             }
             .store(in: &cancellables)
+        
+        viewModel.canLoadMorePublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] canLoadMore in
+                self?.updateCanLoadMore(canLoadMore)
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func updateCharacters(_ characters: [Character]) {
+        self.characters = characters
+        tableView.reloadSections(IndexSet(integer: SectionType.characters.rawValue), with: .none)
+    }
+    
+    private func updateCanLoadMore(_ canLoadMore: Bool) {
+        guard self.canLoadMore != canLoadMore else { return }
+        
+        self.canLoadMore = canLoadMore
+        tableView.reloadSections(IndexSet(integer: SectionType.loadMore.rawValue), with: .none)
+    }
+    
+    private func updateSearchText(_ text: String) {
+        currentSearchText = text
+        viewModel.updateSearchText(text)
     }
 }
 
@@ -75,6 +101,8 @@ extension CharacterListViewController: UITableViewDataSource{
             return 1
         case .characters:
             return characters.count
+        case .loadMore:
+            return canLoadMore ? 1 : 0
         }
     }
     
@@ -86,14 +114,15 @@ extension CharacterListViewController: UITableViewDataSource{
             return makeSearchCell(tableView: tableView, indexPath: indexPath)
         case .characters:
             return makeCharacterCell(tableView: tableView, indexPath: indexPath)
+        case .loadMore:
+            return makeLoadMoreCell(tableView: tableView, indexPath: indexPath)
         }
     }
     
     private func makeSearchCell(tableView: UITableView, indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "SearchTableViewCell", for: indexPath) as! SearchTableViewCell
         cell.configure(text: currentSearchText) { [weak self] text in
-            self?.currentSearchText = text
-            self?.viewModel.updateSearchText(text)
+            self?.updateSearchText(text)
         }
         
         return cell
@@ -103,6 +132,16 @@ extension CharacterListViewController: UITableViewDataSource{
         let cell = tableView.dequeueReusableCell(withIdentifier: "CharacterTableViewCell", for: indexPath) as! CharacterTableViewCell
         let character = characters[indexPath.row]
         cell.configure(with: character)
+        
+        return cell
+    }
+    
+    private func makeLoadMoreCell(tableView: UITableView, indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "LoadMoreTableViewCell", for: indexPath) as! LoadMoreTableViewCell
+        
+        cell.configure { [weak self] in
+            self?.viewModel.loadMore()
+        }
         
         return cell
     }

@@ -15,6 +15,8 @@ class SearchTableViewCell: UITableViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
+        
+        searchBar.delegate = self
     }
     
     override func prepareForReuse() {

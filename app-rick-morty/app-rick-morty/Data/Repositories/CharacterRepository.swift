@@ -6,10 +6,11 @@
 //
 
 import Foundation
+import UIKit
 import Combine
 
 protocol CharacterRepository {
-    func getCharacters(page: Int?, name: String?) -> AnyPublisher<[Character], Error>
+    func getCharacters(page: Int?, name: String?) -> AnyPublisher<PaginatedResult<Character>, Error>
     func getCharacterDetail(id: Int) -> AnyPublisher<Character, Error>
 }
 
@@ -22,23 +23,49 @@ final class DefaultCharacterRepository: CharacterRepository {
         self.api = api
     }
     
-    func getCharacters(page: Int? = nil, name: String? = nil) -> AnyPublisher<[Character], Error> {
+    func getCharacters(page: Int? = nil, name: String? = nil) -> AnyPublisher<PaginatedResult<Character>, Error> {
         api.request(.characters(page: page, name: name), responseType: ResponseDTO<CharacterDTO>.self)
-            .map { response in
-                response.results.map { $0.toDomain() }
-            }.eraseToAnyPublisher()
+            .flatMap { [api] response -> AnyPublisher<PaginatedResult<Character>, Error> in
+                let characterPublishers = response.results.map { dto in
+                    api.fetchImage(from: dto.image)
+                        .map { image in
+                            dto.toDomain(image: image)
+                        }
+                        .eraseToAnyPublisher( )
+                }
+                
+                guard !characterPublishers.isEmpty else {
+                    return Just(PaginatedResult(items: [], hasNextPage: response.info.next != nil))
+                        .setFailureType(to: Error.self)
+                        .eraseToAnyPublisher()
+                }
+                
+                return Publishers.MergeMany(characterPublishers)
+                    .collect()
+                    .map { characters in
+                        PaginatedResult(items: characters.sorted { $0.id < $1.id }, hasNextPage: response.info.next != nil)
+                    }
+                    .eraseToAnyPublisher()
+            }
+            .eraseToAnyPublisher()
     }
     
     func getCharacterDetail(id: Int) -> AnyPublisher<Character, any Error> {
-        api.request(.characterDetail(id: id), responseType: CharacterDTO.self).map { dto in
-            dto.toDomain()
-        }.eraseToAnyPublisher( )
+        api.request(.characterDetail(id: id), responseType: CharacterDTO.self)
+            .flatMap { [api] dto in
+                api.fetchImage(from: dto.image)
+                    .map { image in
+                        dto.toDomain(image: image)
+                    }
+                    .eraseToAnyPublisher()
+            }
+            .eraseToAnyPublisher( )
     }
 }
 
 private extension CharacterDTO {
-    func toDomain() -> Character {
-        Character(id: id, name: name,status: CharacterStatus(rawValue: status) ?? .unknown, species: species, type: type ?? "", gender: gender, origin: origin.toDomain(), location: location.toDomain(), imageURL: URL(string: image), episodeIds: episode.compactMap{ $0.apiResourceId })
+    func toDomain(image: UIImage?) -> Character {
+        Character(id: id, name: name,status: CharacterStatus(rawValue: status) ?? .unknown, species: species, type: type ?? "", gender: gender, origin: origin.toDomain(), location: location.toDomain(), imageURL: URL(string: self.image), episodeIds: episode.compactMap{ $0.apiResourceId }, image: image)
     }
 }
 
