@@ -11,11 +11,13 @@ import Combine
 protocol CharacterListViewModel {
     var charactersPublisher: AnyPublisher<[Character], Never> { get }
     var canLoadMorePublisher: AnyPublisher<Bool, Never> { get }
+    var isFavoriteFilterActivePublisher: AnyPublisher<Bool, Never> { get }
     
     func viewDidLoad()
     func updateSearchText(_ text: String)
     func loadMore()
     func didSelectCharacter(id: Int)
+    func didTapFavoriteFilter()
 }
 
 final class DefaultCharacterListViewModel: CharacterListViewModel {
@@ -26,11 +28,13 @@ final class DefaultCharacterListViewModel: CharacterListViewModel {
     private let charactersSubject = CurrentValueSubject<[Character], Never>([])
     private let canLoadMoreSubject = CurrentValueSubject<Bool, Never>(false)
     private let searchTextSubject = CurrentValueSubject<String, Never>("")
+    private let isFavoriteFilterActiveSubject = CurrentValueSubject<Bool, Never>(false)
     
     private var currentPage = 1
     private var currentSearchName: String?
     private var isLoading = false
     private var hasNextPage = false
+    private var isFavoriteFilterActive = false
     
     var charactersPublisher: AnyPublisher<[Character], Never> {
         charactersSubject.eraseToAnyPublisher()
@@ -38,6 +42,10 @@ final class DefaultCharacterListViewModel: CharacterListViewModel {
     
     var canLoadMorePublisher: AnyPublisher<Bool, Never> {
         canLoadMoreSubject.eraseToAnyPublisher()
+    }
+    
+    var isFavoriteFilterActivePublisher: AnyPublisher<Bool, Never> {
+        isFavoriteFilterActiveSubject.eraseToAnyPublisher()
     }
     
     init(dependencies: CharacterDependencies) {
@@ -64,6 +72,12 @@ final class DefaultCharacterListViewModel: CharacterListViewModel {
         coordinator.goToCharacterDetail(id: id)
     }
     
+    func didTapFavoriteFilter() {
+        isFavoriteFilterActive.toggle()
+        isFavoriteFilterActiveSubject.send(isFavoriteFilterActive)
+        loadFirstPage(name: currentSearchName)
+    }
+    
     private func bindSearch() {
         searchTextSubject
             .removeDuplicates()
@@ -82,8 +96,13 @@ final class DefaultCharacterListViewModel: CharacterListViewModel {
         currentPage = 1
         hasNextPage = false
         canLoadMoreSubject.send(false)
-        loadCharacters(page: currentPage, name: currentSearchName, shouldAppend: false)
-    }
+        
+        if isFavoriteFilterActive {
+            loadFavoriteCharacters(name: currentSearchName)
+        } else {
+            loadCharacters(page: currentPage, name: currentSearchName, shouldAppend: false)
+        }
+        }
     
     private func loadCharacters(page: Int, name: String?, shouldAppend: Bool) {
         guard !isLoading else { return }
@@ -106,6 +125,45 @@ final class DefaultCharacterListViewModel: CharacterListViewModel {
                 let characters = shouldAppend ? self.charactersSubject.value + result.items : result.items
                 self.charactersSubject.send(characters)
             }
+    }
+    
+    private func loadFavoriteCharacters(name: String?) {
+        let getFavoriteUseCase: GetFavoriteUseCase = dependencies.resolve()
+        let getCharacterDetailUseCsae: GetCharacterDetailUseCase = dependencies.resolve()
+        
+        let favorites = filterFavorites(getFavoriteUseCase.execute(.character), name: name)
+        
+        guard !favorites.isEmpty else {
+            charactersSubject.send([])
+            return
+        }
+        
+        isLoading = true
+        
+        loadCancellable = Publishers.Sequence(sequence: favorites)
+            .flatMap(maxPublishers: .max(1)) { favorite in
+                getCharacterDetailUseCsae.execute(id: favorite.id)
+                    .map { Optional($0) }
+                    .replaceError(with: nil)
+            }
+            .compactMap { $0 }
+            .collect()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] characters in
+                guard let self = self else { return }
+                
+                self.isLoading = false
+                self.hasNextPage = false
+                self.charactersSubject.send(characters)
+            }
+    }
+    
+    private func filterFavorites(_ favorites: [Favorite], name: String?) -> [Favorite] {
+        guard let name else { return favorites }
+        
+        return favorites.filter { favorite in
+            favorite.name.localizedCaseInsensitiveContains(name)
+        }
     }
     
     private func cleanSearchName(_ name: String?) -> String? {

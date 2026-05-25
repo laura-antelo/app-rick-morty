@@ -16,21 +16,37 @@
                 <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <searchBar contentMode="redraw" fixedFrame="YES" placeholder="Buscar" translatesAutoresizingMaskIntoConstraints="NO" id="MrU-eg-c0f">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                    <searchBar contentMode="redraw" text="" placeholder="Buscar" translatesAutoresizingMaskIntoConstraints="NO" id="MrU-eg-c0f">
+                        <rect key="frame" x="0.0" y="-10" width="267" height="64"/>
                         <textInputTraits key="textInputTraits"/>
                         <connections>
                             <outlet property="delegate" destination="-1" id="eYu-yE-FFN"/>
                         </connections>
                     </searchBar>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1ks-Bs-2YW">
+                        <rect key="frame" x="267" y="4.6666666666666679" width="53" height="35"/>
+                        <state key="normal" title="Button"/>
+                        <buttonConfiguration key="configuration" style="plain" title="Button"/>
+                        <connections>
+                            <action selector="didTapFavoriteFilterButton" destination="KGk-i7-Jjw" eventType="touchUpInside" id="s1G-RL-MDw"/>
+                        </connections>
+                    </button>
                 </subviews>
+                <constraints>
+                    <constraint firstAttribute="trailing" secondItem="MrU-eg-c0f" secondAttribute="trailing" constant="53" id="3kh-B8-22B"/>
+                    <constraint firstItem="1ks-Bs-2YW" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="AT1-1P-i4C"/>
+                    <constraint firstItem="MrU-eg-c0f" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="Uu3-dW-6ne"/>
+                    <constraint firstAttribute="trailing" secondItem="1ks-Bs-2YW" secondAttribute="trailing" id="Y0W-ff-nho"/>
+                    <constraint firstItem="MrU-eg-c0f" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="eFo-lA-bO0"/>
+                    <constraint firstItem="1ks-Bs-2YW" firstAttribute="leading" secondItem="MrU-eg-c0f" secondAttribute="trailing" id="qt0-lH-wjL"/>
+                </constraints>
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
             <connections>
+                <outlet property="favoriteFilterButton" destination="1ks-Bs-2YW" id="kLX-RQ-rJm"/>
                 <outlet property="searchBar" destination="MrU-eg-c0f" id="bMC-Xf-6oS"/>
             </connections>
-            <point key="canvasLocation" x="67" y="68"/>
+            <point key="canvasLocation" x="65.648854961832058" y="67.605633802816911"/>
         </tableViewCell>
     </objects>
 </document>

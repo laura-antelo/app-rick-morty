@@ -11,11 +11,13 @@ import Combine
 protocol EpisodeListViewModel {
     var episodesPublisher: AnyPublisher<[Episode], Never> { get }
     var canLoadMorePublisher: AnyPublisher<Bool, Never> { get }
+    var isFavoriteFilterActivePublisher: AnyPublisher<Bool, Never> { get }
     
     func viewDidLoad()
     func updateSearchText(_ text: String)
     func loadMore()
     func didSelectEpisode(id: Int)
+    func didTapFavoriteFilter()
 }
 
 final class DefaultEpisodeListViewModel: EpisodeListViewModel {
@@ -26,11 +28,13 @@ final class DefaultEpisodeListViewModel: EpisodeListViewModel {
     private let episodesSubject = CurrentValueSubject<[Episode], Never>([])
     private let canLoadMoreSubject = CurrentValueSubject<Bool, Never>(false)
     private let searchTextSubject = CurrentValueSubject<String, Never>("")
+    private let isFavoriteFilterActiveSubject = CurrentValueSubject<Bool, Never>(false)
     
     private var currentPage = 1
     private var currentSearchName: String?
     private var isLoading = false
     private var hasNextPage = false
+    private var isFavoriteFilterActive = false
     
     var episodesPublisher: AnyPublisher<[Episode], Never> {
         episodesSubject.eraseToAnyPublisher()
@@ -38,6 +42,10 @@ final class DefaultEpisodeListViewModel: EpisodeListViewModel {
     
     var canLoadMorePublisher: AnyPublisher<Bool, Never> {
         canLoadMoreSubject.eraseToAnyPublisher()
+    }
+    
+    var isFavoriteFilterActivePublisher: AnyPublisher<Bool, Never> {
+        isFavoriteFilterActiveSubject.eraseToAnyPublisher()
     }
     
     init(dependencies: EpisodeDependencies) {
@@ -64,6 +72,12 @@ final class DefaultEpisodeListViewModel: EpisodeListViewModel {
         coordinator.goToEpisodeDetail(id: id)
     }
     
+    func didTapFavoriteFilter() {
+        isFavoriteFilterActive.toggle()
+        isFavoriteFilterActiveSubject.send(isFavoriteFilterActive)
+        loadFirstPage(name: currentSearchName)
+    }
+    
     private func bindSearch() {
         searchTextSubject
             .removeDuplicates()
@@ -82,7 +96,12 @@ final class DefaultEpisodeListViewModel: EpisodeListViewModel {
         currentPage = 1
         hasNextPage = false
         canLoadMoreSubject.send(false)
-        loadEpisodes(page: currentPage, name: currentSearchName, shouldAppend: false)
+        
+        if isFavoriteFilterActive {
+            loadFavoriteEpisodes(name: currentSearchName)
+        } else {
+            loadEpisodes(page: currentPage, name: currentSearchName, shouldAppend: false)
+        }
     }
     
     private func loadEpisodes(page: Int, name: String?, shouldAppend: Bool) {
@@ -106,6 +125,45 @@ final class DefaultEpisodeListViewModel: EpisodeListViewModel {
                 let episodes = shouldAppend ? self.episodesSubject.value + result.items : result.items
                 self.episodesSubject.send(episodes)
             }
+    }
+    
+    private func loadFavoriteEpisodes(name: String?) {
+        let getFavoriteUseCase: GetFavoriteUseCase = dependencies.resolve()
+        let getEpisodeDetailUseCase: GetEpisodeDetailUseCase = dependencies.resolve()
+        
+        let favorites = filterFavorites(getFavoriteUseCase.execute(.episode), name: name)
+        
+        guard !favorites.isEmpty else {
+            episodesSubject.send([])
+            return
+        }
+        
+        isLoading = true
+        
+        loadCancellable = Publishers.Sequence(sequence: favorites)
+            .flatMap(maxPublishers: .max(1)) { favorite in
+                getEpisodeDetailUseCase.execute(id: favorite.id)
+                    .map { Optional($0) }
+                    .replaceError(with: nil)
+            }
+            .compactMap { $0 }
+            .collect()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] episodes in
+                guard let self = self else { return }
+                
+                self.isLoading = false
+                self.hasNextPage = false
+                self.episodesSubject.send(episodes)
+            }
+    }
+    
+    private func filterFavorites(_ favorites: [Favorite], name: String?) -> [Favorite] {
+        guard let name else { return favorites }
+        
+        return favorites.filter { favorite in
+            favorite.name.localizedCaseInsensitiveContains(name)
+        }
     }
     
     private func cleanSearchName(_ name: String?) -> String? {

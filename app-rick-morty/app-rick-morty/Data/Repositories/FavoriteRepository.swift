@@ -8,7 +8,7 @@
 import Foundation
 
 protocol FavoriteRepository {
-    func getFavorites() -> [Favorite]
+    func getFavorites(type: FavoriteType) -> [Favorite]
     func isFavorite(_ favorite: Favorite) -> Bool
     func toggleFavorite(_ favorite: Favorite) -> Bool
 }
@@ -22,22 +22,20 @@ final class DefaultFavoriteRepository: FavoriteRepository {
         self.userDefaults = userDefaults
     }
     
-    func getFavorites() -> [Favorite] {
-        guard let data = userDefaults.data(forKey: favoritesKey) else {
-            return []
+    func getFavorites(type: FavoriteType) -> [Favorite] {
+        return getAllFavorites().filter { favorite in
+            favorite.type == type
         }
-        
-        return (try? JSONDecoder().decode([Favorite].self, from: data)) ?? []
     }
     
     func isFavorite(_ favorite: Favorite) -> Bool {
-        return getFavorites().contains { storedFavorite in
+        return getAllFavorites().contains { storedFavorite in
             storedFavorite.id == favorite.id && storedFavorite.type == favorite.type
         }
     }
     
     func toggleFavorite(_ favorite: Favorite) -> Bool {
-        var favorites = getFavorites()
+        var favorites = getAllFavorites()
         
         if let index = favorites.firstIndex(where: {
             $0.id == favorite.id && $0.type == favorite.type
@@ -50,6 +48,14 @@ final class DefaultFavoriteRepository: FavoriteRepository {
         favorites.append(favorite)
         save(favorites)
         return true
+    }
+    
+    private func getAllFavorites() -> [Favorite] {
+        guard let data = userDefaults.data(forKey: favoritesKey) else {
+            return []
+        }
+        
+        return (try? JSONDecoder().decode([Favorite].self, from: data)) ?? []
     }
     
     private func save(_ favorites: [Favorite]) {

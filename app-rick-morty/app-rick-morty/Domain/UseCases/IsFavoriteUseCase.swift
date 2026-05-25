@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Combine
 
 protocol IsFavoriteUseCase {
     func execute(_ favorite: Favorite) -> Bool
@@ -15,7 +16,7 @@ final class DefaultIsFavoriteUseCase: IsFavoriteUseCase {
     private let repository: FavoriteRepository
     
     init(repository: FavoriteRepository) {
-        self.repositor.repository = repository
+        self.repository = repository
     }
     
     func execute(_ favorite: Favorite) -> Bool {

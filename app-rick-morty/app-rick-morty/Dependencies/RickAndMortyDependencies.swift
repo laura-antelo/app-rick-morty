@@ -15,6 +15,7 @@ protocol APIDependencies {
 
 protocol FavoriteDependencies {
     func resolve() -> FavoriteRepository
+    func resolve() -> GetFavoriteUseCase
     func resolve() -> IsFavoriteUseCase
     func resolve() -> ToggleFavoriteUseCase
 }

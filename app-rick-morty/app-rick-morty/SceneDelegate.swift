@@ -57,11 +57,15 @@ extension SceneDelegate: FavoriteDependencies {
         return favoriteRepository
     }
     
-    func resolve() -> any IsFavoriteUseCase {
+    func resolve() -> GetFavoriteUseCase {
+        return DefaultGetFavoriteUseCase(repository: favoriteRepository)
+    }
+    
+    func resolve() -> IsFavoriteUseCase {
         return DefaultIsFavoriteUseCase(repository: favoriteRepository)
     }
     
-    func resolve() -> any ToggleFavoriteUseCase {
+    func resolve() -> ToggleFavoriteUseCase {
         return DefaultToggleFavoriteUseCase(repository: favoriteRepository)
     }
 }

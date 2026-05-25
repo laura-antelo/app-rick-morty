@@ -5,6 +5,9 @@
 //  Created by Laura Antelo Gonzalez on 22/5/26.
 //
 
+import Foundation
+import Combine
+
 protocol ToggleFavoriteUseCase {
     func execute(_ favorite: Favorite) -> Bool
 }
