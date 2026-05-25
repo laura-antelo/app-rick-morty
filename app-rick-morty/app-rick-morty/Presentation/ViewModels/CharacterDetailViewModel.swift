@@ -10,12 +10,10 @@ import Combine
 
 protocol CharacterDetailViewModel {
     var characterPublisher: AnyPublisher<Character?, Never> { get }
-    var isFavoritePublisher: AnyPublisher<Bool, Never> { get }
     
     func viewDidLoad()
     func didSelectLocation(id: Int)
     func didSelectEpisode(id: Int)
-    func didTapFavorite()
 }
 
 final class DefaultCharacterDetailViewModel: CharacterDetailViewModel {
@@ -25,16 +23,9 @@ final class DefaultCharacterDetailViewModel: CharacterDetailViewModel {
     
     private var cancellables = Set<AnyCancellable>()
     private let characterSubject = CurrentValueSubject<Character?, Never>(nil)
-    private let isFavoriteSubject = CurrentValueSubject<Bool, Never>(false)
-    
-    private var currentCharracter: Character?
     
     var characterPublisher: AnyPublisher<Character?, Never> {
         characterSubject.eraseToAnyPublisher()
-    }
-    
-    var isFavoritePublisher: AnyPublisher<Bool, Never> {
-        isFavoriteSubject.eraseToAnyPublisher()
     }
     
     init(characterId: Int, dependencies: CharacterDependencies, navigationCoordinator: NavegationCoordinator) {
@@ -55,17 +46,6 @@ final class DefaultCharacterDetailViewModel: CharacterDetailViewModel {
         navigationCoordinator?.goToLocationDetail(id: id)
     }
     
-    func didTapFavorite() {
-        guard let currentCharracter else { return }
-        
-        let favorite = Favorite(id: currentCharracter.id, type: .character, name: currentCharracter.name)
-        
-        let useCase: ToggleFavoriteUseCase = dependencies.resolve()
-        let isFavorite = useCase.execute(favorite)
-        
-        isFavoriteSubject.send(isFavorite)
-    }
-    
     private func loadCharacter() {
         let useCase: GetCharacterDetailUseCase = dependencies.resolve()
         
@@ -76,18 +56,8 @@ final class DefaultCharacterDetailViewModel: CharacterDetailViewModel {
                     print("ERROR loading character detail:", error)
                 }
             } receiveValue: { [weak self] character in
-                self?.updateCharacter(character)
+                self?.characterSubject.send(character)
             }
             .store(in: &cancellables)
-    }
-    
-    private func updateCharacter(_ character: Character) {
-        self.currentCharracter = character
-        self.characterSubject.send(character)
-        self.updateFavoriteState(character: character)
-    }
-    
-    private func updateFavoriteState(character: Character) {
-        let favorite = Favorite(id: character.id, type: .character, name: character.name)
     }
 }
