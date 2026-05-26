@@ -11,10 +11,12 @@ import Combine
 protocol CharacterDetailViewModel {
     var characterPublisher: AnyPublisher<Character?, Never> { get }
     var relatedEpisodesPublisher: AnyPublisher<[Episode], Never> { get }
+    var isFavoritePublisher: AnyPublisher<Bool, Never> { get }
     
     func viewDidLoad()
     func didSelectLocation(id: Int)
     func didSelectEpisode(id: Int)
+    func didTapFavorite()
 }
 
 final class DefaultCharacterDetailViewModel: CharacterDetailViewModel {
@@ -25,6 +27,9 @@ final class DefaultCharacterDetailViewModel: CharacterDetailViewModel {
     private var cancellables = Set<AnyCancellable>()
     private let characterSubject = CurrentValueSubject<Character?, Never>(nil)
     private let relatedEpisodesSubject = CurrentValueSubject<[Episode], Never>([])
+    private let isFavoriteSubject = CurrentValueSubject<Bool, Never>(false)
+    
+    private var currentCharacter: Character?
     
     var characterPublisher: AnyPublisher<Character?, Never> {
         characterSubject.eraseToAnyPublisher()
@@ -32,6 +37,10 @@ final class DefaultCharacterDetailViewModel: CharacterDetailViewModel {
     
     var relatedEpisodesPublisher: AnyPublisher<[Episode], Never> {
         relatedEpisodesSubject.eraseToAnyPublisher()
+    }
+    
+    var isFavoritePublisher: AnyPublisher<Bool, Never> {
+        isFavoriteSubject.eraseToAnyPublisher()
     }
     
     init(characterId: Int, dependencies: RickAndMortyDependencies, navigationCoordinator: NavegationCoordinator) {
@@ -52,6 +61,17 @@ final class DefaultCharacterDetailViewModel: CharacterDetailViewModel {
         navigationCoordinator?.goToLocationDetail(id: id)
     }
     
+    func didTapFavorite() {
+        guard let currentCharacter else { return }
+        
+        let favorite = Favorite(id: currentCharacter.id, type: .character, name: currentCharacter.name)
+        
+        let useCase: ToggleFavoriteUseCase = dependencies.resolve()
+        let isFavorite = useCase.execute(favorite)
+        
+        isFavoriteSubject.send(isFavorite)
+    }
+    
     private func loadCharacter() {
         let useCase: GetCharacterDetailUseCase = dependencies.resolve()
         
@@ -62,10 +82,22 @@ final class DefaultCharacterDetailViewModel: CharacterDetailViewModel {
                     print("ERROR loading character detail:", error)
                 }
             } receiveValue: { [weak self] character in
-                self?.characterSubject.send(character)
-                self?.loadRelatedEpisodes(ids: character.episodeIds)
+                guard let self = self else { return }
+                self.currentCharacter = character
+                self.characterSubject.send(character)
+                self.updateFavoriteState(character: character)
+                self.loadRelatedEpisodes(ids: character.episodeIds)
             }
             .store(in: &cancellables)
+    }
+    
+    private func updateFavoriteState(character: Character) {
+        let favorite = Favorite(id: character.id, type: .character, name: character.name)
+        
+        let useCase: IsFavoriteUseCase = dependencies.resolve()
+        let isFavorite = useCase.execute(favorite)
+        
+        isFavoriteSubject.send(isFavorite)
     }
     
     private func loadRelatedEpisodes(ids: [Int]) {

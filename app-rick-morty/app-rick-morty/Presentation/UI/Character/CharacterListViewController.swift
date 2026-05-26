@@ -18,6 +18,7 @@ class CharacterListViewController: UIViewController {
     private var characters: [Character] = []
     private var currentSearchText: String = ""
     private var canLoadMore = false
+    private var isFavoriteFilterActive = false
     
     private enum SectionType: Int, CaseIterable {
         case search = 0
@@ -68,6 +69,13 @@ class CharacterListViewController: UIViewController {
                 self?.updateCanLoadMore(canLoadMore)
             }
             .store(in: &cancellables)
+        
+        viewModel.isFavoriteFilterActivePublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isActive in
+                self?.updateFavoriteFilter(isActive)
+            }
+            .store(in: &cancellables)
     }
     
     private func updateCharacters(_ characters: [Character]) {
@@ -80,6 +88,11 @@ class CharacterListViewController: UIViewController {
         
         self.canLoadMore = canLoadMore
         tableView.reloadSections(IndexSet(integer: SectionType.loadMore.rawValue), with: .none)
+    }
+    
+    private func updateFavoriteFilter(_ isActive: Bool) {
+        isFavoriteFilterActive = isActive
+        tableView.reloadSections(IndexSet(integer: SectionType.search.rawValue), with: .none)
     }
     
     private func updateSearchText(_ text: String) {
@@ -121,9 +134,15 @@ extension CharacterListViewController: UITableViewDataSource{
     
     private func makeSearchCell(tableView: UITableView, indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "SearchTableViewCell", for: indexPath) as! SearchTableViewCell
-        cell.configure(text: currentSearchText) { [weak self] text in
-            self?.updateSearchText(text)
-        }
+        
+        cell.configure(
+            text: currentSearchText, isFavoriteFilterActive: isFavoriteFilterActive,
+            onTextChanged: { [weak self] text in
+                self?.updateSearchText(text) },
+            onFavoriteFilterChanged: { [weak self] in
+                self?.viewModel.didTapFavoriteFilter()
+            }
+        )
         
         return cell
     }

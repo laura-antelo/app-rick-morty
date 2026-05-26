@@ -13,7 +13,14 @@ protocol APIDependencies {
     func resolve() -> APIClient
 }
 
-protocol EpisodeDependencies {
+protocol FavoriteDependencies {
+    func resolve() -> FavoriteRepository
+    func resolve() -> GetFavoriteUseCase
+    func resolve() -> IsFavoriteUseCase
+    func resolve() -> ToggleFavoriteUseCase
+}
+
+protocol EpisodeDependencies: FavoriteDependencies {
     func resolve() -> EpisodeRepository
     func resolve() -> GetEpisodesUseCase
     func resolve() -> GetEpisodeDetailUseCase
@@ -23,7 +30,7 @@ protocol EpisodeDependencies {
     func resolve() -> EpisodeDetailCoordinatorFactory
 }
 
-protocol CharacterDependencies {
+protocol CharacterDependencies: FavoriteDependencies {
     func resolve() -> CharacterRepository
     func resolve() -> GetCharactersUseCase
     func resolve() -> GetCharacterDetailUseCase
@@ -32,7 +39,7 @@ protocol CharacterDependencies {
     func resolve() -> CharacterCoordinator
     func resolve() -> CharacterDetailCoordinatorFactory
 }
-protocol LocationDependencies {
+protocol LocationDependencies: FavoriteDependencies {
     func resolve() -> LocationRepository
     func resolve() -> GetLocationsUseCase
     func resolve() -> GetLocationDetailUseCase

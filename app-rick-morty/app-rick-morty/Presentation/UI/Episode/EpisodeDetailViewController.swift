@@ -14,6 +14,7 @@ class EpisodeDetailViewController: UIViewController {
     @IBOutlet private weak var codeLabel: UILabel!
     @IBOutlet private weak var airDateLabel: UILabel!
     @IBOutlet private weak var relatedTableView: UITableView!
+    @IBOutlet private weak var favoriteButton: UIButton!
     
     private let viewModel: EpisodeDetailViewModel
     private var cancellables = Set<AnyCancellable>()
@@ -41,6 +42,7 @@ class EpisodeDetailViewController: UIViewController {
     
     private func setupView() {
         navigationItem.title = "Detalle del episodio"
+        updateFavoriteButton(isFavorite: false)
     }
     
     private func setupTableView() {
@@ -62,6 +64,12 @@ class EpisodeDetailViewController: UIViewController {
             .sink { [weak self] characters in
                 self?.updateRelatedCharacters(characters)
             }.store(in: &cancellables)
+        
+        viewModel.isFavoritePublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isFavorite in
+                self?.updateFavoriteButton(isFavorite: isFavorite)
+            }.store(in: &cancellables)
     }
     
     private func configure(with episode: Episode) {
@@ -73,6 +81,17 @@ class EpisodeDetailViewController: UIViewController {
     private func updateRelatedCharacters(_ characters: [Character]) {
         self.relatedCharacters = characters
         self.relatedTableView.reloadData()
+    }
+    
+    private func updateFavoriteButton(isFavorite: Bool) {
+        let imageName = isFavorite ? "heart.fill" : "heart"
+        
+        favoriteButton.setTitle("", for: .normal)
+        favoriteButton.setImage(UIImage(systemName: imageName), for: .normal)
+    }
+    
+    @IBAction private func didTapFavoriteButton(_ sender: UIButton) {
+        viewModel.didTapFavorite()
     }
 }
 

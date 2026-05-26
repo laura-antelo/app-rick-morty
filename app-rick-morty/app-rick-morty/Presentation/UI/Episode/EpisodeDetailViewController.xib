@@ -12,6 +12,7 @@
             <connections>
                 <outlet property="airDateLabel" destination="cis-8K-u5F" id="9Cd-i7-rEv"/>
                 <outlet property="codeLabel" destination="YdL-ZM-nLZ" id="4qd-OJ-2uJ"/>
+                <outlet property="favoriteButton" destination="xEs-9L-bvu" id="IhK-x5-O8J"/>
                 <outlet property="nameLabel" destination="U6h-eM-ZTn" id="bke-Zr-M7H"/>
                 <outlet property="relatedTableView" destination="kvd-OP-HKq" id="ZXK-56-e2Y"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
@@ -48,6 +49,14 @@
                     <nil key="textColor"/>
                     <nil key="highlightedColor"/>
                 </label>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xEs-9L-bvu">
+                    <rect key="frame" x="302" y="124" width="75" height="35"/>
+                    <state key="normal" title="Button"/>
+                    <buttonConfiguration key="configuration" style="plain" title="Button"/>
+                    <connections>
+                        <action selector="didTapFavoriteButton:" destination="-1" eventType="touchUpInside" id="1Mh-Jw-hzC"/>
+                    </connections>
+                </button>
             </subviews>
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -55,7 +64,9 @@
                 <constraint firstItem="cis-8K-u5F" firstAttribute="top" secondItem="YdL-ZM-nLZ" secondAttribute="bottom" constant="16" id="1Fx-0h-YND"/>
                 <constraint firstItem="YdL-ZM-nLZ" firstAttribute="top" secondItem="U6h-eM-ZTn" secondAttribute="bottom" constant="16" id="76o-o1-6pR"/>
                 <constraint firstItem="YdL-ZM-nLZ" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="16" id="A4A-xO-bim"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="xEs-9L-bvu" secondAttribute="trailing" constant="16" id="Ddw-5j-Wzy"/>
                 <constraint firstItem="U6h-eM-ZTn" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="16" id="J2c-Ki-z4F"/>
+                <constraint firstItem="xEs-9L-bvu" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" constant="6" id="NeQ-pL-WPH"/>
                 <constraint firstItem="kvd-OP-HKq" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="16" id="ZOv-zg-Td7"/>
                 <constraint firstItem="cis-8K-u5F" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="16" id="cDZ-dd-UAB"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="kvd-OP-HKq" secondAttribute="trailing" constant="16" id="cYG-19-sf6"/>

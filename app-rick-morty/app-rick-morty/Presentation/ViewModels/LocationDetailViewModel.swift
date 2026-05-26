@@ -11,9 +11,11 @@ import Combine
 protocol LocationDetailViewModel {
     var locationPublisher: AnyPublisher<Location?, Never> { get }
     var relatedResidentsPublisher: AnyPublisher<[Character], Never> { get }
+    var isFavoritePublisher: AnyPublisher<Bool, Never> { get }
     
     func viewDidLoad()
     func didSelectCharacter(id: Int)
+    func didTapFavorite()
 }
 
 final class DefaultLocationDetailViewModel: LocationDetailViewModel {
@@ -24,6 +26,9 @@ final class DefaultLocationDetailViewModel: LocationDetailViewModel {
     private var cancellables = Set<AnyCancellable>()
     private let locationSubject = CurrentValueSubject<Location?, Never>(nil)
     private let relatedResidentsSubject = CurrentValueSubject<[Character], Never>([])
+    private let isFavoriteSubject = CurrentValueSubject<Bool, Never>(false)
+    
+    private var currentLocation: Location?
     
     var relatedResidentsPublisher: AnyPublisher<[Character], Never> {
         relatedResidentsSubject.eraseToAnyPublisher()
@@ -31,6 +36,10 @@ final class DefaultLocationDetailViewModel: LocationDetailViewModel {
     
     var locationPublisher: AnyPublisher<Location?, Never> {
         locationSubject.eraseToAnyPublisher()
+    }
+    
+    var isFavoritePublisher: AnyPublisher<Bool, Never> {
+        isFavoriteSubject.eraseToAnyPublisher()
     }
     
     init(locationId: Int, dependencies: RickAndMortyDependencies, navigationCoordinator: NavegationCoordinator) {
@@ -47,6 +56,17 @@ final class DefaultLocationDetailViewModel: LocationDetailViewModel {
         navigationCoordinator?.goToCharacterDetail(id: id)
     }
     
+    func didTapFavorite() {
+        guard let currentLocation else { return }
+        
+        let favorite = Favorite(id: currentLocation.id, type: .location, name: currentLocation.name)
+        
+        let useCase: ToggleFavoriteUseCase = dependencies.resolve()
+        let isFavorite = useCase.execute(favorite)
+        
+        isFavoriteSubject.send(isFavorite)
+    }
+    
     private func loadLocation() {
         let useCase: GetLocationDetailUseCase = dependencies.resolve()
         
@@ -57,10 +77,22 @@ final class DefaultLocationDetailViewModel: LocationDetailViewModel {
                     print("ERROR loading location detail:", error)
                 }
             } receiveValue: { [weak self] location in
-                self?.locationSubject.send(location)
-                self?.loadRelatedCharacters(ids: location.residentsIds)
+                guard let self = self else { return }
+                self.currentLocation = location
+                self.locationSubject.send(location)
+                self.updateFavoriteState(location: location)
+                self.loadRelatedCharacters(ids: location.residentsIds)
             }
             .store(in: &cancellables)
+    }
+    
+    private func updateFavoriteState(location: Location) {
+        let favorite = Favorite(id: location.id, type: .location, name: location.name)
+        
+        let useCase: IsFavoriteUseCase = dependencies.resolve()
+        let isFavorite = useCase.execute(favorite)
+        
+        isFavoriteSubject.send(isFavorite)
     }
     
     private func loadRelatedCharacters(ids: [Int]) {

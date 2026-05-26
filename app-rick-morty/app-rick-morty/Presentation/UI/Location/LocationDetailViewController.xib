@@ -11,6 +11,7 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="LocationDetailViewController" customModule="app_rick_morty" customModuleProvider="target">
             <connections>
                 <outlet property="dimensionLabel" destination="zAu-AR-qpD" id="amO-E7-LI6"/>
+                <outlet property="favoriteButton" destination="xR6-mN-O0S" id="kcs-PJ-ykb"/>
                 <outlet property="nameLabel" destination="Coc-4D-UCE" id="ln0-Ps-X0X"/>
                 <outlet property="relatedTableView" destination="V7K-bR-urB" id="UaO-1A-wkz"/>
                 <outlet property="typeLabel" destination="dfB-Dm-Yms" id="LJa-lm-6h1"/>
@@ -48,6 +49,14 @@
                     <nil key="textColor"/>
                     <nil key="highlightedColor"/>
                 </label>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xR6-mN-O0S">
+                    <rect key="frame" x="302" y="124" width="75" height="35"/>
+                    <state key="normal" title="Button"/>
+                    <buttonConfiguration key="configuration" style="plain" title="Button"/>
+                    <connections>
+                        <action selector="didTapFavoriteButton:" destination="-1" eventType="touchUpInside" id="obB-zX-NG0"/>
+                    </connections>
+                </button>
             </subviews>
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -55,7 +64,9 @@
                 <constraint firstItem="V7K-bR-urB" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="16" id="BMu-DO-UuU"/>
                 <constraint firstItem="dfB-Dm-Yms" firstAttribute="top" secondItem="Coc-4D-UCE" secondAttribute="bottom" constant="16" id="Cd9-g0-mCA"/>
                 <constraint firstItem="zAu-AR-qpD" firstAttribute="top" secondItem="dfB-Dm-Yms" secondAttribute="bottom" constant="16" id="Erh-0T-rpD"/>
+                <constraint firstItem="xR6-mN-O0S" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" constant="6" id="F94-ob-sIU"/>
                 <constraint firstItem="dfB-Dm-Yms" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="16" id="RSf-nH-Cvw"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="xR6-mN-O0S" secondAttribute="trailing" constant="16" id="SiB-LR-eBL"/>
                 <constraint firstItem="Coc-4D-UCE" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="16" id="XLZ-hz-3ig"/>
                 <constraint firstItem="V7K-bR-urB" firstAttribute="bottom" secondItem="fnl-2z-Ty3" secondAttribute="bottom" constant="50" id="YPH-qZ-8hE"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="V7K-bR-urB" secondAttribute="trailing" constant="16" id="lPh-38-TaQ"/>

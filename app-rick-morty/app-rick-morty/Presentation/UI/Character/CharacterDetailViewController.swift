@@ -18,6 +18,7 @@ class CharacterDetailViewController: UIViewController {
     @IBOutlet private weak var typeLabel: UILabel!
     @IBOutlet private weak var genderLabel: UILabel!
     @IBOutlet private weak var relatedTableView: UITableView!
+    @IBOutlet private weak var favoriteButton: UIButton!
     
     private let viewModel: CharacterDetailViewModel
     private var cancellables = Set<AnyCancellable>()
@@ -56,6 +57,7 @@ class CharacterDetailViewController: UIViewController {
 
     private func setupView() {
         navigationItem.title = "Detalle del personaje"
+        updateFavoriteButton(isFavorite: false)
     }
     
     private func setupTableView() {
@@ -79,6 +81,13 @@ class CharacterDetailViewController: UIViewController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] episodes in
                 self?.updateRelatedEpisodes(episodes)
+            }
+            .store(in: &cancellables)
+        
+        viewModel.isFavoritePublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isFavorite in
+                self?.updateFavoriteButton(isFavorite: isFavorite)
             }
             .store(in: &cancellables)
     }
@@ -107,12 +116,23 @@ class CharacterDetailViewController: UIViewController {
         relatedTableView.reloadSections(IndexSet(integer: Section.episodes.rawValue), with: .none)
     }
     
+    private func updateFavoriteButton(isFavorite: Bool) {
+        let imageName = isFavorite ? "heart.fill" : "heart"
+        
+        favoriteButton.setTitle("", for: .normal)
+        favoriteButton.setImage(UIImage(systemName: imageName), for: .normal)
+    }
+    
     private func configureOriginCell(_ cell: LocationTableViewCell, origin: LocationReference) {
         cell.configure(with: origin, title: "Origen")
     }
     
     private func configureLocationCell(_ cell: LocationTableViewCell, location: LocationReference) {
         cell.configure(with: location, title: "Última ubicación")
+    }
+    
+    @IBAction private func didTapFavoriteButton(_ sender: UIButton) {
+        viewModel.didTapFavorite()
     }
 }
 
@@ -122,7 +142,7 @@ extension CharacterDetailViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        guard let character, let section = Section(rawValue: section) else { return 0 }
+        guard let section = Section(rawValue: section) else { return 0 }
         
         switch section {
         case .locations:

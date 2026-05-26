@@ -14,6 +14,7 @@ class LocationDetailViewController: UIViewController {
     @IBOutlet private weak var typeLabel: UILabel!
     @IBOutlet private weak var dimensionLabel: UILabel!
     @IBOutlet private weak var relatedTableView: UITableView!
+    @IBOutlet private weak var favoriteButton: UIButton!
     
     private let viewModel: LocationDetailViewModel
     private var cancellables = Set<AnyCancellable>()
@@ -41,6 +42,7 @@ class LocationDetailViewController: UIViewController {
     
     private func setupView() {
         navigationItem.title = "Detalle de la ubicación"
+        updateFavoriteButton(isFavorite: false)
     }
     
     private func setupTableView() {
@@ -63,6 +65,12 @@ class LocationDetailViewController: UIViewController {
             .sink{ [weak self] residents in
                 self?.updateRelatedResidents(residents)
             }.store(in: &cancellables)
+        
+        viewModel.isFavoritePublisher
+            .receive(on: DispatchQueue.main)
+            .sink{ [weak self] isFavorite in
+                self?.updateFavoriteButton(isFavorite: isFavorite)
+            }.store(in: &cancellables)
     }
     
     private func updateTexts(with location: Location) {
@@ -74,6 +82,17 @@ class LocationDetailViewController: UIViewController {
     private func updateRelatedResidents(_ residents: [Character]){
         relatedResidents = residents
         relatedTableView.reloadData( )
+    }
+    
+    private func updateFavoriteButton(isFavorite: Bool) {
+        let imageName = isFavorite ? "heart.fill" : "heart"
+        
+        favoriteButton.setTitle("", for: .normal)
+        favoriteButton.setImage(UIImage(systemName: imageName), for: .normal)
+    }
+    
+    @IBAction private func didTapFavoriteButton(_ sender: UIButton) {
+        viewModel.didTapFavorite()
     }
 }
 
