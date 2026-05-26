@@ -22,6 +22,7 @@ class EpisodeDetailViewController: UIViewController {
     private let exportTextBuilder = DetailExportTextBuilder()
     private let pdfGenerator = PDFGenerator()
     
+    private var episode: Episode?
     private var relatedCharacters: [Character] = []
     
     init(viewModel: EpisodeDetailViewModel) {
@@ -51,9 +52,8 @@ class EpisodeDetailViewController: UIViewController {
     
     private func setupExportButtons() {
         let shareButton = UIBarButtonItem(image: UIImage(systemName: "square.and.arrow.up"), style: .plain, target: self, action: #selector(didTapShareButton))
-        let pdfButton = UIBarButtonItem(title: "PDF", style: .plain, target: self, action: #selector(didTapPDFButton))
         
-        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: UIStackView(arrangedSubviews: [shareButton, pdfButton])) = [shareButton, pdfButton]
+        navigationItem.setRightBarButtonItems([shareButton], animated: false)
     }
     
     private func setupTableView() {
@@ -84,6 +84,7 @@ class EpisodeDetailViewController: UIViewController {
     }
     
     private func configure(with episode: Episode) {
+        self.episode = episode
         nameLabel.text = episode.name
         codeLabel.text = "\(episode.code)"
         airDateLabel.text = "Fecha de emisión: \(episode.airDate)"
@@ -104,7 +105,7 @@ class EpisodeDetailViewController: UIViewController {
     private func share(items: [Any]) {
         let activityViewController = UIActivityViewController(activityItems: items, applicationActivities: nil)
         
-        activityViewController.popoverPresentationController?.barButtonItem = navigationItem.rightBarButtonItem
+        activityViewController.popoverPresentationController?.sourceView = view
         
         present(activityViewController, animated: true)
     }
@@ -125,7 +126,14 @@ class EpisodeDetailViewController: UIViewController {
         guard let episode else { showExportError(); return }
         
         let text = exportTextBuilder.makeText(for: episode)
-        share(items: [text]))
+        let fileName = "episodio_\(episode.code).pdf"
+        
+        guard let pdfURL = pdfGenerator.generatePDF(title: episode.name, content: text, filename: fileName) else {
+            showExportError()
+            return
+        }
+        
+        share(items: [pdfURL])
     }
 }
 

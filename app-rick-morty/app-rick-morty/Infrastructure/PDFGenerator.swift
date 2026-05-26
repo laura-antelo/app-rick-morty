@@ -22,6 +22,7 @@ final class PDFGenerator {
                 context.beginPage()
                 
                 drawTitle(title, in: pageRect)
+                drawContent(content, in: pageRect)
             }
             
             return fileURL
