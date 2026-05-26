@@ -19,6 +19,10 @@ class EpisodeDetailViewController: UIViewController {
     private let viewModel: EpisodeDetailViewModel
     private var cancellables = Set<AnyCancellable>()
     
+    private let exportTextBuilder = DetailExportTextBuilder()
+    private let pdfGenerator = PDFGenerator()
+    
+    private var episode: Episode?
     private var relatedCharacters: [Character] = []
     
     init(viewModel: EpisodeDetailViewModel) {
@@ -42,7 +46,14 @@ class EpisodeDetailViewController: UIViewController {
     
     private func setupView() {
         navigationItem.title = "Detalle del episodio"
+        setupExportButtons()
         updateFavoriteButton(isFavorite: false)
+    }
+    
+    private func setupExportButtons() {
+        let shareButton = UIBarButtonItem(image: UIImage(systemName: "square.and.arrow.up"), style: .plain, target: self, action: #selector(didTapShareButton))
+        
+        navigationItem.setRightBarButtonItems([shareButton], animated: false)
     }
     
     private func setupTableView() {
@@ -73,6 +84,7 @@ class EpisodeDetailViewController: UIViewController {
     }
     
     private func configure(with episode: Episode) {
+        self.episode = episode
         nameLabel.text = episode.name
         codeLabel.text = "\(episode.code)"
         airDateLabel.text = "Fecha de emisión: \(episode.airDate)"
@@ -90,8 +102,38 @@ class EpisodeDetailViewController: UIViewController {
         favoriteButton.setImage(UIImage(systemName: imageName), for: .normal)
     }
     
+    private func share(items: [Any]) {
+        let activityViewController = UIActivityViewController(activityItems: items, applicationActivities: nil)
+        
+        activityViewController.popoverPresentationController?.sourceView = view
+        
+        present(activityViewController, animated: true)
+    }
+    
+    private func showExportError() {
+        let alertController = UIAlertController(title: "No se puede exportar", message: "El detalle todavía no etá cargado", preferredStyle: .alert)
+        
+        alertController.addAction(UIAlertAction(title: "Aceptar", style: .default))
+        
+        present(alertController, animated: true)
+    }
+    
     @IBAction private func didTapFavoriteButton(_ sender: UIButton) {
         viewModel.didTapFavorite()
+    }
+    
+    @objc private func didTapShareButton() {
+        guard let episode else { showExportError(); return }
+        
+        let text = exportTextBuilder.makeText(for: episode)
+        let fileName = "episodio_\(episode.code).pdf"
+        
+        guard let pdfURL = pdfGenerator.generatePDF(title: episode.name, content: text, filename: fileName) else {
+            showExportError()
+            return
+        }
+        
+        share(items: [pdfURL])
     }
 }
 

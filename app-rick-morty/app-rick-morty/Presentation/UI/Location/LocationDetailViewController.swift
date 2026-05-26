@@ -19,6 +19,10 @@ class LocationDetailViewController: UIViewController {
     private let viewModel: LocationDetailViewModel
     private var cancellables = Set<AnyCancellable>()
     
+    private let exportTextBuilder = DetailExportTextBuilder()
+    private let pdfGenerator = PDFGenerator()
+    
+    private var location: Location?
     private var relatedResidents: [Character] = []
     
     init(viewModel: LocationDetailViewModel) {
@@ -51,6 +55,12 @@ class LocationDetailViewController: UIViewController {
         relatedTableView.tableFooterView = UIView()
     }
     
+    private func setupExportButtons() {
+        let shareButton = UIBarButtonItem(image: UIImage(systemName: "square.and.arrow.up"), style: .plain, target: self, action: #selector(didTapShareButton))
+        
+        navigationItem.setRightBarButtonItems([shareButton], animated: false)
+    }
+    
     private func bindViewModel() {
         viewModel.locationPublisher
             .receive(on: DispatchQueue.main)
@@ -74,6 +84,7 @@ class LocationDetailViewController: UIViewController {
     }
     
     private func updateTexts(with location: Location) {
+        self.location = location
         nameLabel.text = location.name
         typeLabel.text = "Tipo: \(location.type)"
         dimensionLabel.text = "Dimensión: \(location.dimension)"
@@ -91,8 +102,38 @@ class LocationDetailViewController: UIViewController {
         favoriteButton.setImage(UIImage(systemName: imageName), for: .normal)
     }
     
+    private func share(items: [Any]) {
+        let activityViewController = UIActivityViewController(activityItems: items, applicationActivities: nil)
+        
+        activityViewController.popoverPresentationController?.sourceView = view
+        
+        present(activityViewController, animated: true)
+    }
+    
+    private func showExportError() {
+        let alertController = UIAlertController(title: "No se puede exportar", message: "El detalle todavía no etá cargado", preferredStyle: .alert)
+        
+        alertController.addAction(UIAlertAction(title: "Aceptar", style: .default))
+        
+        present(alertController, animated: true)
+    }
+    
     @IBAction private func didTapFavoriteButton(_ sender: UIButton) {
         viewModel.didTapFavorite()
+    }
+    
+    @objc private func didTapShareButton() {
+        guard let location else { showExportError(); return }
+        
+        let text = exportTextBuilder.makeText(for: location)
+        let fileName = "location_\(location.id).pdf"
+        
+        guard let pdfURL = pdfGenerator.generatePDF(title: location.name, content: text, filename: fileName) else {
+            showExportError()
+            return
+        }
+        
+        share(items: [pdfURL])
     }
 }
 

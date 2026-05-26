@@ -23,6 +23,9 @@ class CharacterDetailViewController: UIViewController {
     private let viewModel: CharacterDetailViewModel
     private var cancellables = Set<AnyCancellable>()
     
+    private let exportTextBuilder = DetailExportTextBuilder()
+    private let pdfGenerator = PDFGenerator()
+    
     private var character: Character?
     private var relatedEpisodes: [Episode] = []
     
@@ -57,7 +60,14 @@ class CharacterDetailViewController: UIViewController {
 
     private func setupView() {
         navigationItem.title = "Detalle del personaje"
+        setupExportButtons()
         updateFavoriteButton(isFavorite: false)
+    }
+    
+    private func setupExportButtons() {
+        let shareButton = UIBarButtonItem(image: UIImage(systemName: "square.and.arrow.up"), style: .plain, target: self, action: #selector(didTapShareButton))
+        
+        navigationItem.setRightBarButtonItems([shareButton], animated: false)
     }
     
     private func setupTableView() {
@@ -131,8 +141,38 @@ class CharacterDetailViewController: UIViewController {
         cell.configure(with: location, title: "Última ubicación")
     }
     
+    private func share(items: [Any]) {
+        let activityViewController = UIActivityViewController(activityItems: items, applicationActivities: nil)
+        
+        activityViewController.popoverPresentationController?.sourceView = view
+        
+        present(activityViewController, animated: true)
+    }
+    
+    private func showExportError() {
+        let alertController = UIAlertController(title: "No se puede exportar", message: "El detalle todavía no etá cargado", preferredStyle: .alert)
+        
+        alertController.addAction(UIAlertAction(title: "Aceptar", style: .default))
+        
+        present(alertController, animated: true)
+    }
+    
     @IBAction private func didTapFavoriteButton(_ sender: UIButton) {
         viewModel.didTapFavorite()
+    }
+    
+    @objc private func didTapShareButton() {
+        guard let character else { showExportError(); return }
+        
+        let text = exportTextBuilder.makeText(for: character)
+        let fileName = "personaje_\(character.id).pdf"
+        
+        guard let pdfURL = pdfGenerator.generatePDF(title: character.name, content: text, filename: fileName) else {
+            showExportError()
+            return
+        }
+        
+        share(items: [pdfURL])
     }
 }
 

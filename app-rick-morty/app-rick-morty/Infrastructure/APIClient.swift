@@ -17,10 +17,12 @@ protocol APIClient {
 final class URLSessionAPIClient: APIClient {
     private let session: URLSession
     private let decoder: JSONDecoder
+    private let imageCache: ImageDiskCache
     
-    init(session: URLSession = .shared, decoder: JSONDecoder = JSONDecoder()) {
+    init(session: URLSession = .shared, decoder: JSONDecoder = JSONDecoder(), imageCache: ImageDiskCache = .shared) {
         self.session = session
         self.decoder = decoder
+        self.imageCache = imageCache
     }
     
     func request<T: Decodable>(_ endpoint: APIEndpoint, responseType: T.Type) -> AnyPublisher<T, any Error> {
@@ -53,11 +55,20 @@ final class URLSessionAPIClient: APIClient {
             return Just(nil).setFailureType(to: Error.self).eraseToAnyPublisher()
         }
         
+        if let cachedData = imageCache.data(forKey: urlString), let cachedImage = UIImage(data: cachedData) {
+            return Just(cachedImage)
+                .setFailureType(to: Error.self)
+                .eraseToAnyPublisher()
+        }
+        
         let request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData)
         
         return session.dataTaskPublisher(for: request)
             .map(\.data)
-            .map { UIImage(data: $0) }
+            .map { [imageCache] data in
+                imageCache.save(data, forKey: urlString)
+                return UIImage(data: data)
+            }
             .mapError { $0 as Error }
             .catch { _ in Just(nil).setFailureType(to: Error.self) }
             .eraseToAnyPublisher()
