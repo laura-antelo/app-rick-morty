@@ -13,10 +13,10 @@ struct EpisodeDetailViewModelTests {
     
     @MainActor
     @Test func WhenEpisodeDetailViewDidLoad_ThenPublishesEpisode() async throws {
-        let dependencies = EpisodeDependenciesMock()
+        let dependencies = RickAndMortyDependenciesMock()
         let navigationCoordinator = CoordinatorSpy()
         
-        dependencies.getEpisodeDetailUseCaseSpy.result = .success(TestRickAndMortyData.episode)
+        dependencies.episodeDependenciesMock.getEpisodeDetailUseCaseSpy.result = .success(TestRickAndMortyData.episode)
         
         let sut = DefaultEpisodeDetailViewModel(episodeId: 1, dependencies: dependencies, navigationCoordinator: navigationCoordinator)
         
@@ -33,11 +33,35 @@ struct EpisodeDetailViewModelTests {
     }
     
     @MainActor
-    @Test func WhenEpisodeDetailSelectsCharacter_ThenRequestsCharacterNavigation() async throws {
-        let dependencies = EpisodeDependenciesMock()
+    @Test func WhenEpisodeFavoriteButtonIsTapped_ThenFavoriteStateChanges() async throws {
+        let dependencies = RickAndMortyDependenciesMock()
         let navigationCoordinator = CoordinatorSpy()
         
-        dependencies.getEpisodeDetailUseCaseSpy.result = .success(TestRickAndMortyData.episode)
+        dependencies.episodeDependenciesMock.getEpisodeDetailUseCaseSpy.result = .success(TestRickAndMortyData.episode)
+        
+        let sut = DefaultEpisodeDetailViewModel(episodeId: 1, dependencies: dependencies, navigationCoordinator: navigationCoordinator)
+        
+        let publisher = sut.isFavoritePublisher
+        var iterator = publisher.values.makeAsyncIterator()
+        
+        _ = await iterator.next()
+        
+        sut.viewDidLoad()
+        _ = await iterator.next()
+        
+        sut.didTapFavorite()
+        
+        let isFavorite = await iterator.next()
+        
+        #expect(isFavorite == true)
+    }
+    
+    @MainActor
+    @Test func WhenEpisodeDetailSelectsCharacter_ThenRequestsCharacterNavigation() async throws {
+        let dependencies = RickAndMortyDependenciesMock()
+        let navigationCoordinator = CoordinatorSpy()
+        
+        dependencies.episodeDependenciesMock.getEpisodeDetailUseCaseSpy.result = .success(TestRickAndMortyData.episode)
         
         let sut = DefaultEpisodeDetailViewModel(episodeId: 1, dependencies: dependencies, navigationCoordinator: navigationCoordinator)
         

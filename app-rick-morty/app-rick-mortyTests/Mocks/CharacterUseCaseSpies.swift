@@ -12,9 +12,9 @@ final class GetCharactersUseCaseSpy: GetCharactersUseCase {
     var receivedPage: Int?
     var receivedName: String?
     
-    var result: Result<[Character], Error> = .success([])
+    var result: Result<PaginatedResult<Character>, Error> = .success(PaginatedResult(items: [], hasNextPage: false))
     
-    func execute(page: Int?, name: String?) -> AnyPublisher<[Character], any Error> {
+    func execute(page: Int?, name: String?) -> AnyPublisher<PaginatedResult<Character>, any Error> {
         receivedName = name
         receivedPage = page
         

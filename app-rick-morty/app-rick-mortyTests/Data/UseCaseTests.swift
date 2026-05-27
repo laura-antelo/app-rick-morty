@@ -85,4 +85,38 @@ struct UseCaseTests {
         
         #expect(repository.getLocationDetailId == 1)
     }
+    
+    @MainActor
+    @Test func WhenGetFavoriteUseCaseExecutes_ThenReturnsFavorites() {
+        let repository = FavoriteRepositorySpy()
+        repository.favorites = [TestRickAndMortyData.characterFavorite]
+        
+        let sut = DefaultGetFavoriteUseCase(repository: repository)
+        
+        let favorites = sut.execute(.character)
+        
+        #expect(favorites.first?.id == 1)
+    }
+    
+    @MainActor
+    @Test func WhenIsFavoriteUseCaseExecutes_ThenReturnsFavoriteState() {
+        let repository = FavoriteRepositorySpy()
+        repository.favorites = [TestRickAndMortyData.characterFavorite]
+        
+        let sut = DefaultIsFavoriteUseCase(repository: repository)
+        
+        #expect(sut.execute(TestRickAndMortyData.characterFavorite))
+    }
+    
+    @MainActor
+    @Test func WhenToggleFavoriteUseCaseExecutes_ThenTogglesFavorite() {
+        let repository = FavoriteRepositorySpy()
+        repository.favorites = [TestRickAndMortyData.characterFavorite]
+        
+        let sut = DefaultToggleFavoriteUseCase(repository: repository)
+        
+        let isFavorite = sut.execute(TestRickAndMortyData.characterFavorite)
+        
+        #expect(isFavorite == false)
+    }
 }

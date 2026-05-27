@@ -13,19 +13,19 @@ final class EpisodeRepositorySpy: EpisodeRepository {
     var getEpisodesName: String?
     var getEpisodeDetailId: Int?
     
-    var charactersResult: Result<[Episode], Error> = .success([])
-    var characterDetailResult: Result<Episode, Error> = .success(TestRickAndMortyData.episode)
+    var episodesResult: Result<PaginatedResult<Episode>, Error> = .success(PaginatedResult(items: [], hasNextPage: false))
+    var episodeDetailResult: Result<Episode, Error> = .success(TestRickAndMortyData.episode)
     
-    func getEpisodes(page: Int?, name: String?) -> AnyPublisher<[Episode], any Error> {
+    func getEpisodes(page: Int?, name: String?) -> AnyPublisher<PaginatedResult<Episode>, any Error> {
         getEpisodesPage = page
         getEpisodesName = name
         
-        return charactersResult.publisher.eraseToAnyPublisher()
+        return episodesResult.publisher.eraseToAnyPublisher()
     }
     
     func getEpisodeDetail(id: Int) -> AnyPublisher<Episode, any Error> {
         getEpisodeDetailId = id
         
-        return characterDetailResult.publisher.eraseToAnyPublisher()
+        return episodeDetailResult.publisher.eraseToAnyPublisher()
     }
 }

@@ -13,10 +13,10 @@ final class CharacterRepositorySpy: CharacterRepository {
     var getCharactersName: String?
     var getCharacterDetailId: Int?
     
-    var charactersResult: Result<[Character], Error> = .success([])
+    var charactersResult: Result<PaginatedResult<Character>, Error> = .success(PaginatedResult(items: [], hasNextPage: false))
     var characterDetailResult: Result<Character, Error> = .success(TestRickAndMortyData.character)
     
-    func getCharacters(page: Int?, name: String?) -> AnyPublisher<[Character], any Error> {
+    func getCharacters(page: Int?, name: String?) -> AnyPublisher<PaginatedResult<Character>, any Error> {
         getCharactersPage = page
         getCharactersName = name
         

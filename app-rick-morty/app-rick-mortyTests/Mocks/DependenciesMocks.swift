@@ -23,6 +23,23 @@ final class CharacterDependenciesMock: CharacterDependencies {
     let getCharacterDetailUseCaseSpy = GetCharacterDetailUseCaseSpy()
     let characterCoordinatorSpy = CoordinatorSpy()
     let characterDetailCoordinatorFactorySpy = CharacterDetailCoordinatorFactorySpy()
+    let favoriteRepositorySpy = FavoriteRepositorySpy()
+    
+    func resolve() -> FavoriteRepository {
+        favoriteRepositorySpy
+    }
+    
+    func resolve() -> GetFavoriteUseCase {
+        DefaultGetFavoriteUseCase(repository: favoriteRepositorySpy)
+    }
+    
+    func resolve() -> IsFavoriteUseCase {
+        DefaultIsFavoriteUseCase(repository: favoriteRepositorySpy)
+    }
+    
+    func resolve() -> ToggleFavoriteUseCase {
+        DefaultToggleFavoriteUseCase(repository: favoriteRepositorySpy)
+    }
     
     func resolve() -> CharacterRepository {
         characterRepositorySpy
@@ -60,6 +77,23 @@ final class LocationDependenciesMock: LocationDependencies {
     let getLocationDetailUseCaseSpy = GetLocationDetailUseCaseSpy()
     let locationCoordinatorSpy = CoordinatorSpy()
     let locationDetailCoordinatorFactorySpy = LocationDetailCoordinatorFactorySpy()
+    let favoriteRepositorySpy = FavoriteRepositorySpy()
+    
+    func resolve() -> FavoriteRepository {
+        favoriteRepositorySpy
+    }
+    
+    func resolve() -> GetFavoriteUseCase {
+        DefaultGetFavoriteUseCase(repository: favoriteRepositorySpy)
+    }
+    
+    func resolve() -> IsFavoriteUseCase {
+        DefaultIsFavoriteUseCase(repository: favoriteRepositorySpy)
+    }
+    
+    func resolve() -> ToggleFavoriteUseCase {
+        DefaultToggleFavoriteUseCase(repository: favoriteRepositorySpy)
+    }
     
     func resolve() -> LocationRepository {
         locationRepositorySpy
@@ -97,6 +131,23 @@ final class EpisodeDependenciesMock: EpisodeDependencies {
     let getEpisodeDetailUseCaseSpy = GetEpisodeDetailUseCaseSpy()
     let episodeCoordinatorSpy = CoordinatorSpy()
     let episodeDetailCoordinatorFactorySpy = EpisodeDetailCoordinatorFactorySpy()
+    let favoriteRepositorySpy = FavoriteRepositorySpy()
+    
+    func resolve() -> FavoriteRepository {
+        favoriteRepositorySpy
+    }
+    
+    func resolve() -> GetFavoriteUseCase {
+        DefaultGetFavoriteUseCase(repository: favoriteRepositorySpy)
+    }
+    
+    func resolve() -> IsFavoriteUseCase {
+        DefaultIsFavoriteUseCase(repository: favoriteRepositorySpy)
+    }
+    
+    func resolve() -> ToggleFavoriteUseCase {
+        DefaultToggleFavoriteUseCase(repository: favoriteRepositorySpy)
+    }
     
     func resolve() -> EpisodeRepository {
         episodeRepositorySpy
@@ -124,5 +175,117 @@ final class EpisodeDependenciesMock: EpisodeDependencies {
     
     func resolve() -> EpisodeDetailCoordinatorFactory {
         episodeDetailCoordinatorFactorySpy
+    }
+}
+
+final class RickAndMortyDependenciesMock: RickAndMortyDependencies {
+    let apiDependenciesMock = APIDependenciesMock()
+    let characterDependenciesMock = CharacterDependenciesMock()
+    let episodeDependenciesMock = EpisodeDependenciesMock()
+    let locationDependenciesMock = LocationDependenciesMock()
+    let favoriteRepositorySpy = FavoriteRepositorySpy()
+    
+    func resolve() -> any APIClient {
+        apiDependenciesMock.resolve()
+    }
+    
+    func resolve() -> any EpisodeRepository {
+        episodeDependenciesMock.resolve()
+    }
+    
+    func resolve() -> any GetEpisodesUseCase {
+        episodeDependenciesMock.resolve()
+    }
+    
+    func resolve() -> any GetEpisodeDetailUseCase {
+        episodeDependenciesMock.resolve()
+    }
+    
+    func resolve() -> any EpisodeListViewModel {
+        episodeDependenciesMock.resolve()
+    }
+    
+    func resolve() -> EpisodeListViewController {
+        episodeDependenciesMock.resolve()
+    }
+    
+    func resolve() -> any EpisodeCoordinator {
+        episodeDependenciesMock.resolve()
+    }
+    
+    func resolve() -> any EpisodeDetailCoordinatorFactory {
+        episodeDependenciesMock.resolve()
+    }
+    
+    func resolve() -> any CharacterRepository {
+        characterDependenciesMock.resolve()
+    }
+    
+    func resolve() -> any GetCharactersUseCase {
+        characterDependenciesMock.resolve()
+    }
+    
+    func resolve() -> any GetCharacterDetailUseCase {
+        characterDependenciesMock.resolve()
+    }
+    
+    func resolve() -> any CharacterListViewModel {
+        characterDependenciesMock.resolve()
+    }
+    
+    func resolve() -> CharacterListViewController {
+        characterDependenciesMock.resolve()
+    }
+    
+    func resolve() -> any CharacterCoordinator {
+        characterDependenciesMock.resolve()
+    }
+    
+    func resolve() -> any CharacterDetailCoordinatorFactory {
+        characterDependenciesMock.resolve()
+    }
+    
+    func resolve() -> any LocationRepository {
+        locationDependenciesMock.resolve()
+    }
+    
+    func resolve() -> any GetLocationsUseCase {
+        locationDependenciesMock.resolve()
+    }
+    
+    func resolve() -> any GetLocationDetailUseCase {
+        locationDependenciesMock.resolve()
+    }
+    
+    func resolve() -> any LocationListViewModel {
+        locationDependenciesMock.resolve()
+    }
+    
+    func resolve() -> LocationListViewController {
+        locationDependenciesMock.resolve()
+    }
+    
+    func resolve() -> any LocationCoordinator {
+        locationDependenciesMock.resolve()
+    }
+    
+    func resolve() -> any LocationDetailCoordinatorFactory {
+        locationDependenciesMock.resolve()
+    }
+    
+    func resolve() -> any FavoriteRepository {
+        favoriteRepositorySpy
+    }
+    
+    func resolve() -> any GetFavoriteUseCase {
+        DefaultGetFavoriteUseCase(repository: favoriteRepositorySpy)
+    }
+    
+    func resolve() -> any IsFavoriteUseCase {
+        DefaultIsFavoriteUseCase(repository: favoriteRepositorySpy)
+    }
+    
+    func resolve() -> any ToggleFavoriteUseCase {
+        DefaultToggleFavoriteUseCase(repository: favoriteRepositorySpy)
     }
 }

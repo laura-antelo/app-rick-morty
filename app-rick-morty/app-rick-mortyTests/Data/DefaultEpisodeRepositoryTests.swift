@@ -18,14 +18,12 @@ struct DefaultEpisodeRepositoryTests {
         
         let sut = DefaultEpisodeRepository(api: apiClientSpy)
         
-        var episodes: [Episode]?
-        
         let publisher = sut.getEpisodes(page: 1, name: "Pilot")
         
         var iterator = publisher.values.makeAsyncIterator()
-        episodes = try await iterator.next()
+        let result = try await iterator.next()
         
-        #expect(episodes?.first?.id == 1)
+        #expect(result?.items.first?.id == 1)
     }
     
     @MainActor

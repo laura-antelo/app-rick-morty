@@ -12,9 +12,9 @@ final class GetLocationsUseCaseSpy: GetLocationsUseCase {
     var receivedPage: Int?
     var receivedName: String?
     
-    var result: Result<[Location], Error> = .success([])
+    var result: Result<PaginatedResult<Location>, Error> = .success(PaginatedResult(items: [], hasNextPage: false))
     
-    func execute(page: Int?, name: String?) -> AnyPublisher<[Location], any Error> {
+    func execute(page: Int?, name: String?) -> AnyPublisher<PaginatedResult<Location>, any Error> {
         receivedName = name
         receivedPage = page
         
