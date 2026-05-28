@@ -86,6 +86,12 @@ private struct CachedEpisode: Codable {
     let airDate: String
     let code: String
     let charactersIds: [Int]
+    let imageData: Data?
+    let synopsis: String
+    let rating: Double
+    let voteCount: Int
+    let season: Int
+    let episodeNumber: Int
     
     init(episode: Episode) {
         self.id = episode.id
@@ -93,9 +99,16 @@ private struct CachedEpisode: Codable {
         self.airDate = episode.airDate
         self.code = episode.code
         self.charactersIds = episode.charactersIds
+        self.imageData = episode.image?.pngData()
+        self.synopsis = episode.synopsis
+        self.rating = episode.rating
+        self.voteCount = episode.voteCount
+        self.season = episode.season
+        self.episodeNumber = episode.episodeNumber
     }
     
     func toDomain() -> Episode {
-        return Episode(id: id, name: name, airDate: airDate, code: code, charactersIds: charactersIds)
+        let image = imageData.flatMap { UIImage(data: $0) }
+        return Episode(id: id, name: name, airDate: airDate, code: code, charactersIds: charactersIds, image: image, synopsis: synopsis, rating: rating, voteCount: voteCount, season: season, episodeNumber: episodeNumber)
     }
 }
