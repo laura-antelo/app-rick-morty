@@ -37,7 +37,9 @@ final class DefaultEpisodeRepository: EpisodeRepository {
 
 private extension EpisodeDTO {
     func toDomain() -> Episode {
-        Episode(id: id, name: name, airDate: airDate, code: episode, charactersIds: characters.compactMap { $0.apiResourceId})
+        let episodeCode = EpisodeCodeParser.parse(episode)
+        
+        return Episode(id: id, name: name, airDate: airDate, code: episode, charactersIds: characters.compactMap { $0.apiResourceId }, season: episodeCode.season, episodeNumber: episodeCode.episodeNumber)
     }
 }
 

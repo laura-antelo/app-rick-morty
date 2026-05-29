@@ -12,11 +12,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
     
     private lazy var apiClient: APIClient = URLSessionAPIClient()
+    private lazy var imdbApiClient: IMDbAPIClient = URLSessionIMDbAPIClient()
     
     private lazy var diskCache: DiskCache = .shared
     
+    private lazy var imageRepository: ImageRepository = DefaultImageRepository(api: apiClient)
+    
+    private lazy var imdbEpisodeRepository: IMDbEpisodeRepository = CacheIMDbEpisodeDecorator(decoratedRepository: DefaultIMDbEpisodeRepository(api: imdbApiClient, imageRepository: imageRepository), cache: diskCache)
     private lazy var characterRepository: CharacterRepository = CacheCharacterDecorator(decoratedRepository: DefaultCharacterRepository(api: apiClient), cache: diskCache)
-    private lazy var episodeRepository: EpisodeRepository = CacheEpisodeDecorator(decoratedRepository: DefaultEpisodeRepository(api: apiClient), cache: diskCache)
+    private lazy var episodeRepository: EpisodeRepository = EnrichedEpisodeRepository(episodeRepository: CacheEpisodeDecorator(decoratedRepository: DefaultEpisodeRepository(api: apiClient), cache: diskCache), imdbEpisodeRepository: imdbEpisodeRepository)
     private lazy var locationRepository: LocationRepository = CacheLocationDecorator(decoratedRepository: DefaultLocationRepository(api: apiClient), cache: diskCache)
     
     private lazy var favoriteRepository: FavoriteRepository = DefaultFavoriteRepository()
