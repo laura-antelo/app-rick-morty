@@ -22,7 +22,7 @@ struct Episode {
     let season: Int
     let episodeNumber: Int
     
-    init(id: Int, name: String, airDate: String, code: String, charactersIds: [Int], image: UIImage?, synopsis: String, rating: Double, voteCount: Int, season: Int, episodeNumber: Int) {
+    init(id: Int, name: String, airDate: String, code: String, charactersIds: [Int], image: UIImage? = nil, synopsis: String = "", rating: Double = 0, voteCount: Int = 0, season: Int = 0, episodeNumber: Int = 0) {
         self.id = id
         self.name = name
         self.airDate = airDate
