@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 struct IMDbEpisodeResponseDTO: Decodable {
     let episodes: [IMDbEpisodeDTO]
@@ -19,6 +20,10 @@ struct IMDbEpisodeDTO: Decodable {
     let rating: IMDbRatingDTO
     let seasonNumber: Int
     let episodeNumber: Int
+    
+    func toDomain(image: UIImage?) -> IMDbEpisode {
+        IMDbEpisode(id: id, title: primaryTitle, image: image, synopsis: plot, rating: rating.aggregateRating, voteCount: rating.voteCount, season: seasonNumber, episodeNumber: episodeNumber)
+    }
 }
 
 struct IMDbImageDTO: Decodable {
