@@ -11,6 +11,8 @@ class EpisodeTableViewCell: UITableViewCell {
 
     
     @IBOutlet private weak var nameLabel: UILabel!
+    @IBOutlet private weak var codeLabel: UILabel!
+    @IBOutlet private weak var episodeImageView: UIImageView!
     @IBOutlet private weak var descriptionLabel: UILabel!
     
     override func awakeFromNib() {
@@ -19,11 +21,15 @@ class EpisodeTableViewCell: UITableViewCell {
 
     func configure(with episode: Episode) {
         nameLabel.text = episode.name
-        descriptionLabel.text = "\(episode.code) - \(episode.airDate)"
+        codeLabel.text = "\(episode.code) - \(episode.airDate)"
+        episodeImageView.image = episode.image ?? UIImage(systemName: "tv")
+        descriptionLabel.text = episode.synopsis
     }
     
+    /*
     func configure(episodeId: Int){
         nameLabel.text = "Episodio: \(episodeId)"
-        descriptionLabel.text = ""
+        codeLabel.text = ""
     }
+     */
 }

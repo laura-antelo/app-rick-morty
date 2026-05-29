@@ -10,9 +10,12 @@ import Combine
 
 class EpisodeDetailViewController: UIViewController {
     
+    @IBOutlet private weak var episodeImageView: UIImageView!
     @IBOutlet private weak var nameLabel: UILabel!
     @IBOutlet private weak var codeLabel: UILabel!
     @IBOutlet private weak var airDateLabel: UILabel!
+    @IBOutlet private weak var ratingLabel: UILabel!
+    @IBOutlet private weak var synopsisLabel: UILabel!
     @IBOutlet private weak var relatedTableView: UITableView!
     @IBOutlet private weak var favoriteButton: UIButton!
     
@@ -86,8 +89,10 @@ class EpisodeDetailViewController: UIViewController {
     private func configure(with episode: Episode) {
         self.episode = episode
         nameLabel.text = episode.name
-        codeLabel.text = "\(episode.code)"
+        codeLabel.text = "Tempoprada \(episode.season) - Episodio \(episode.episodeNumber)"
         airDateLabel.text = "Fecha de emisión: \(episode.airDate)"
+        ratingLabel.text = "Puntuación: \(String(format: "%.1,f", episode.rating)) de 10 - \(episode.voteCount) valoraciones"
+        synopsisLabel.text = episode.synopsis.isEmpty ? "Sin sinopsis disponible" : episode.synopsis
     }
     
     private func updateRelatedCharacters(_ characters: [Character]) {
