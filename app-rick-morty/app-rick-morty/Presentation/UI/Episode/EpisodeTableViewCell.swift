@@ -18,18 +18,20 @@ class EpisodeTableViewCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
     }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        nameLabel.text = nil
+        codeLabel.text = nil
+        episodeImageView.image = UIImage(systemName: "tv")
+        descriptionLabel.text = nil
+    }
 
     func configure(with episode: Episode) {
         nameLabel.text = episode.name
-        codeLabel.text = "\(episode.code) - \(episode.airDate)"
+        codeLabel.text = episode.code
         episodeImageView.image = episode.image ?? UIImage(systemName: "tv")
-        descriptionLabel.text = episode.synopsis
+        descriptionLabel.text = episode.synopsis.isEmpty ? "Sin sinopsis disponible" : episode.synopsis
     }
-    
-    /*
-    func configure(episodeId: Int){
-        nameLabel.text = "Episodio: \(episodeId)"
-        codeLabel.text = ""
-    }
-     */
 }

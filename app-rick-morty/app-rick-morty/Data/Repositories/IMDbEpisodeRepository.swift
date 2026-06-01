@@ -23,12 +23,28 @@ final class DefaultIMDbEpisodeRepository: IMDbEpisodeRepository {
     }
     
     func getEpisodes(season: Int) -> AnyPublisher<[IMDbEpisode], Error>{
-        api.request(.episodes, responseType: IMDbEpisodeResponseDTO.self)
-            .map { response in
-                response.episodes.filter { $0.seasonNumber == season }
+        fetchAllEpisodes(pageToken: nil, accumulatedEpisodes: [])
+            .map { episodes in
+                episodes.filter { Int($0.season) == season }
             }
             .flatMap { [imageRepository] episodeDTO in
                 Self.mapEpisodes(episodeDTO, imageRepository: imageRepository)
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    private func fetchAllEpisodes(pageToken: String?, accumulatedEpisodes: [IMDbEpisodeDTO]) -> AnyPublisher<[IMDbEpisodeDTO], Error> {
+        api.request(.episodes(nextPageToken: pageToken), responseType: IMDbEpisodeResponseDTO.self)
+            .flatMap { [weak self] response -> AnyPublisher<[IMDbEpisodeDTO], Error> in
+                let allEpisodes = accumulatedEpisodes + response.episodes
+                
+                guard let self, let nextPageToken = response.nextPageToken, nextPageToken != pageToken else {
+                    return Just(allEpisodes)
+                        .setFailureType(to: Error.self)
+                        .eraseToAnyPublisher()
+                }
+                
+                return self.fetchAllEpisodes(pageToken: response.nextPageToken, accumulatedEpisodes: allEpisodes)
             }
             .eraseToAnyPublisher()
     }

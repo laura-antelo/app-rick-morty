@@ -91,8 +91,9 @@ class EpisodeDetailViewController: UIViewController {
         nameLabel.text = episode.name
         codeLabel.text = "Tempoprada \(episode.season) - Episodio \(episode.episodeNumber)"
         airDateLabel.text = "Fecha de emisión: \(episode.airDate)"
-        ratingLabel.text = "Puntuación: \(String(format: "%.1,f", episode.rating)) de 10 - \(episode.voteCount) valoraciones"
+        ratingLabel.text = "Puntuación: \(String(format: "%.1f", episode.rating)) de 10 - \(episode.voteCount) valoraciones"
         synopsisLabel.text = episode.synopsis.isEmpty ? "Sin sinopsis disponible" : episode.synopsis
+        episodeImageView.image = episode.image ?? UIImage(systemName: "tv")
     }
     
     private func updateRelatedCharacters(_ characters: [Character]) {

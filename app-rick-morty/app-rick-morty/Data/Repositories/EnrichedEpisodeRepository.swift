@@ -50,7 +50,9 @@ final class EnrichedEpisodeRepository: EpisodeRepository {
         
         let publishers = seasons.map { season in
             imdbEpisodeRepository.getEpisodes(season: season)
-                .replaceError(with: [])
+                .catch { error -> Just<[IMDbEpisode]> in
+                    return Just([])
+                }
         }
         
         return Publishers.MergeMany(publishers)
