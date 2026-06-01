@@ -10,19 +10,20 @@ import UIKit
 
 struct IMDbEpisodeResponseDTO: Decodable {
     let episodes: [IMDbEpisodeDTO]
+    let nextPageToken: String?
 }
 
 struct IMDbEpisodeDTO: Decodable {
     let id: String
-    let primaryTitle: String
+    let title: String
     let primaryImage: IMDbImageDTO
-    let plot: String
-    let rating: IMDbRatingDTO
-    let seasonNumber: Int
+    let plot: String?
+    let rating: IMDbRatingDTO?
+    let season: String
     let episodeNumber: Int
     
     func toDomain(image: UIImage?) -> IMDbEpisode {
-        IMDbEpisode(id: id, title: primaryTitle, image: image, synopsis: plot, rating: rating.aggregateRating, voteCount: rating.voteCount, season: seasonNumber, episodeNumber: episodeNumber)
+        IMDbEpisode(id: id, title: title, image: image, synopsis: plot ?? "Sin sinopsis", rating: rating?.aggregateRating ?? 0, voteCount: rating?.voteCount ?? 0, season: Int(season) ?? 0, episodeNumber: episodeNumber)
     }
 }
 

@@ -40,8 +40,12 @@ final class DetailExportTextBuilder {
             Detalle del episodio
             
             Nombre: \(episode.name)
-            Código: \(episode.code)
+            Temporada: \(episode.season)
+            Episodio: \(episode.episodeNumber)
             Fecha de emisión: \(episode.airDate)
+            Puntuación: \(String(format: "%.1f", episode.rating))
+            Valoraciones: \(episode.voteCount)
+            Sinopsis: \(episode.synopsis.isEmpty ? "Sin sinopsis disponible" : episode.synopsis)
             Personajes: \(episode.charactersIds.count)
             """
     }

@@ -21,7 +21,7 @@ final class CacheIMDbEpisodeDecorator: IMDbEpisodeRepository {
     func getEpisodes(season: Int) -> AnyPublisher<[IMDbEpisode], Error>{
         let cachedKey = "imdb_episodes_season_\(season)"
         
-        if let cachedEpisodes = cache.load([CachedIMDbEpisode].self, forKey: cachedKey) {
+        if let cachedEpisodes = cache.load([CachedIMDbEpisode].self, forKey: cachedKey), !cachedEpisodes.isEmpty {
             return Just(cachedEpisodes.map { $0.toDomain() })
                 .setFailureType(to: Error.self)
                 .eraseToAnyPublisher()
@@ -29,6 +29,8 @@ final class CacheIMDbEpisodeDecorator: IMDbEpisodeRepository {
         
         return decoratedRepository.getEpisodes(season: season)
             .handleEvents(receiveOutput: { [cache] episodes in
+                guard !episodes.isEmpty else { return }
+                
                 let cachedEpisodes = episodes.map { CachedIMDbEpisode(episode: $0) }
                 cache.save(cachedEpisodes, forKey: cachedKey)
             })
