@@ -60,6 +60,8 @@
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
             <connections>
                 <outlet property="codeLabel" destination="MWa-dG-mif" id="aui-UW-a0L"/>
+                <outlet property="descriptionLabel" destination="rJl-aN-KOw" id="dEy-s6-SjT"/>
+                <outlet property="episodeImageView" destination="snC-YM-XPT" id="sm8-Dx-aUa"/>
                 <outlet property="nameLabel" destination="TlA-J8-Xtl" id="h8J-zw-KjJ"/>
             </connections>
             <point key="canvasLocation" x="138.93129770992365" y="158.45070422535213"/>

@@ -10,6 +10,24 @@ import UIKit
 
 struct IMDbEpisodeResponseDTO: Decodable {
     let episodes: [IMDbEpisodeDTO]
+    
+    /*
+    enum CodingKeys: String, CodingKey {
+        case episodes
+        case titles
+    }
+    
+    init(from decoder: Decoder) throws {
+        if let singleValueContainer = try? decoder.singleValueContainer(),
+            let episodes = try? singleValueContainer.decode([IMDbEpisodeDTO].self) {
+            self.episodes = episodes
+            return
+        }
+        
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        self.episodes = (try? container.decodeIfPresent([IMDbEpisodeDTO].self, forKey: .episodes)) ?? (try? container.decodeIfPresent([IMDbEpisodeDTO].self, forKey: .titles)) ?? []
+    }*/
 }
 
 struct IMDbEpisodeDTO: Decodable {
