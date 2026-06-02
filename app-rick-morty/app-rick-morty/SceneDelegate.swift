@@ -42,7 +42,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         let mainWindow = UIWindow(windowScene: windowScene)
         window = mainWindow
-        let mainCoordinator = DefaultMainCoordinator(window: mainWindow, dependencies: self)
+        let mainCoordinator = DefaultAnimatedCoordinatorDecorator(decorated: DefaultMainCoordinator(window: mainWindow, dependencies: self),
+                                                                  window: mainWindow)
         let initialViewController = mainCoordinator.start()
         mainWindow.rootViewController = initialViewController
         mainWindow.makeKeyAndVisible()
