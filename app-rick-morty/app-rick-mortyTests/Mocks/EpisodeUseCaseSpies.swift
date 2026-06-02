@@ -12,9 +12,9 @@ final class GetEpisodesUseCaseSpy: GetEpisodesUseCase {
     var receivedPage: Int?
     var receivedName: String?
     
-    var result: Result<[Episode], Error> = .success([])
+    var result: Result<PaginatedResult<Episode>, Error> = .success(PaginatedResult(items: [], hasNextPage: false))
     
-    func execute(page: Int?, name: String?) -> AnyPublisher<[Episode], any Error> {
+    func execute(page: Int?, name: String?) -> AnyPublisher<PaginatedResult<Episode>, any Error> {
         receivedName = name
         receivedPage = page
         

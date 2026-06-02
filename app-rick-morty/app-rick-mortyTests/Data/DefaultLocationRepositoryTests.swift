@@ -18,14 +18,12 @@ struct DefaultLocationRepositoryTests {
         
         let sut = DefaultLocationRepository(api: apiClientSpy)
         
-        var locations: [Location]?
-        
         let publisher = sut.getLocations(page: 1, name: "Earth")
         
         var iterator = publisher.values.makeAsyncIterator()
-        locations = try await iterator.next()
+        var result = try await iterator.next()
         
-        #expect(locations?.first?.id == 1)
+        #expect(result?.items.first?.id == 1)
     }
     
     @MainActor

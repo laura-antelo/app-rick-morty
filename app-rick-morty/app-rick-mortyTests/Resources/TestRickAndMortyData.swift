@@ -45,7 +45,7 @@ enum TestRickAndMortyData {
         id: 1, name: "Rick Sanchez", status: .alive, species: "Human", type: "", gender: "Male",
         origin: LocationReference(id: 1, name: "Earth"), location: LocationReference(id: 3, name: "Citadel of Ricks"),
         imageURL: URL(string: "https://rickandmortyapi.com/api/character/avatar/1.jpeg"),
-        episodeIds: [1, 2]
+        episodeIds: [1, 2], image: nil
     )
     
     static let location = Location(
@@ -55,4 +55,10 @@ enum TestRickAndMortyData {
     static let episode = Episode(
         id: 1, name: "Pilot", airDate: "December 2, 2013", code: "S01E01", charactersIds: [1, 2]
     )
+    
+    static let characterFavorite = Favorite(id: 1, type: .character, name: "Rick Sanchez")
+    
+    static let locationFavorite = Favorite(id: 1, type: .location, name: "Earth")
+    
+    static let episodeFavorite = Favorite(id: 1, type: .episode, name: "Pilot")
 }

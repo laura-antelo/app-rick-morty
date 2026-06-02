@@ -18,15 +18,13 @@ struct DefaultCharacterRepositoryTests {
         apiClientSpy.response = ResponseDTO(info: TestRickAndMortyData.pageInfo, results: [TestRickAndMortyData.characterDTO])
         
         let sut = DefaultCharacterRepository(api: apiClientSpy)
-        
-        var characters: [Character]?
-        
+
         let publisher = sut.getCharacters(page: 1, name: "Rick")
         
         var iterator = publisher.values.makeAsyncIterator()
-        characters = try await iterator.next()
+        let result = try await iterator.next()
         
-        #expect(characters?.first?.id == 1)
+        #expect(result?.items.first?.id == 1)
     }
     
     @MainActor

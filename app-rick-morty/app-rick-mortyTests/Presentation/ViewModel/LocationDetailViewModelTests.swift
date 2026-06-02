@@ -13,10 +13,10 @@ struct LocationDetailViewModelTests {
     
     @MainActor
     @Test func WhenLocationDetailViewDidLoad_ThenPublishesLocation() async throws {
-        let dependencies = LocationDependenciesMock()
+        let dependencies = RickAndMortyDependenciesMock()
         let navigationCoordinator = CoordinatorSpy()
         
-        dependencies.getLocationDetailUseCaseSpy.result = .success(TestRickAndMortyData.location)
+        dependencies.locationDependenciesMock.getLocationDetailUseCaseSpy.result = .success(TestRickAndMortyData.location)
         
         let sut = DefaultLocationDetailViewModel(locationId: 1, dependencies: dependencies, navigationCoordinator: navigationCoordinator)
         
@@ -33,11 +33,35 @@ struct LocationDetailViewModelTests {
     }
     
     @MainActor
-    @Test func WhenLocationDetailSelectsCharacter_ThenRequestsCharacterNavigation() async throws {
-        let dependencies = LocationDependenciesMock()
+    @Test func WhenLocationFavoriteButtonIsTapped_ThenFavoriteStateChanges() async throws {
+        let dependencies = RickAndMortyDependenciesMock()
         let navigationCoordinator = CoordinatorSpy()
         
-        dependencies.getLocationDetailUseCaseSpy.result = .success(TestRickAndMortyData.location)
+        dependencies.locationDependenciesMock.getLocationDetailUseCaseSpy.result = .success(TestRickAndMortyData.location)
+        
+        let sut = DefaultLocationDetailViewModel(locationId: 1, dependencies: dependencies, navigationCoordinator: navigationCoordinator)
+        
+        let publisher = sut.isFavoritePublisher
+        var iterator = publisher.values.makeAsyncIterator()
+        
+        _ = await iterator.next()
+        
+        sut.viewDidLoad()
+        _ = await iterator.next()
+        
+        sut.didTapFavorite()
+        
+        let isFavorite = await iterator.next()
+        
+        #expect(isFavorite == true)
+    }
+    
+    @MainActor
+    @Test func WhenLocationDetailSelectsCharacter_ThenRequestsCharacterNavigation() async throws {
+        let dependencies = RickAndMortyDependenciesMock()
+        let navigationCoordinator = CoordinatorSpy()
+        
+        dependencies.locationDependenciesMock.getLocationDetailUseCaseSpy.result = .success(TestRickAndMortyData.location)
         
         let sut = DefaultLocationDetailViewModel(locationId: 1, dependencies: dependencies, navigationCoordinator: navigationCoordinator)
         
