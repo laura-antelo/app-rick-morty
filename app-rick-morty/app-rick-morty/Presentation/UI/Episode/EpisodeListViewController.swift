@@ -17,14 +17,22 @@ class EpisodeListViewController: UIViewController {
     private var cancellables: Set<AnyCancellable> = []
     
     private var episodes: [Episode] = []
+    private var sectionTypes: [SectionType] = [.search, .loadMore]
+    private var collapsedSeasons: Set<Int> = []
+    
     private var currentSearchText: String = ""
     private var canLoadMore = false
     private var isFavoriteFilterActive = false
     
-    private enum SectionType: Int, CaseIterable {
-        case search = 0
-        case episodes = 1
-        case loadMore = 2
+    private enum SectionType {
+        case search
+        case season(SeasonSection)
+        case loadMore
+    }
+    
+    private struct SeasonSection {
+        let season: Int
+        let episodes: [Episode]
     }
     
     init(viewModel: EpisodeListViewModel) {
@@ -81,7 +89,8 @@ class EpisodeListViewController: UIViewController {
     
     private func updateEpisodes(_ episodes: [Episode]) {
         self.episodes = episodes
-        tableView.reloadSections(IndexSet(integer: SectionType.episodes.rawValue), with: .none)
+        self.sectionTypes = makeSectionTypes(from: episodes)
+        tableView.reloadData()
     }
     
     private func updateSearchText(_ text: String) {
@@ -91,43 +100,84 @@ class EpisodeListViewController: UIViewController {
     
     private func updateFavoriteFilter(_ isActive: Bool) {
         isFavoriteFilterActive = isActive
-        tableView.reloadSections(IndexSet(integer: SectionType.search.rawValue), with: .none)
+        tableView.reloadData()
     }
     
     private func updateCanLoadMore(_ canLoadMore: Bool) {
-        guard self.canLoadMore != canLoadMore else { return }
-        
         self.canLoadMore = canLoadMore
-        tableView.reloadSections(IndexSet(integer: SectionType.loadMore.rawValue), with: .none)
+        tableView.reloadData()
+    }
+    
+    private func makeSectionTypes(from episodes: [Episode]) -> [SectionType] {
+        let groupedEpisodes = Dictionary(grouping: episodes) { episode in
+            episode.season
+        }
+        
+        let seasonSections = groupedEpisodes
+            .map { season, episodes in
+                SeasonSection(season: season, episodes: episodes.sorted { first, second in
+                    if first.episodeNumber == second.episodeNumber {
+                        return first.id < second.id
+                    }
+                    
+                    return first.episodeNumber < second.episodeNumber
+                })
+            }
+            .sorted { first, second in
+                first.season < second.season
+            }
+        
+        var sections: [SectionType] = [.search]
+        sections.append(contentsOf: seasonSections.map { .season($0) })
+        sections.append(.loadMore)
+        
+        return sections
+    }
+    
+    @objc private func didTapSeasonHeader(_ sender: UIButton) {
+        let season = sender.tag
+        
+        if collapsedSeasons.contains(season) {
+            collapsedSeasons.remove(season)
+        } else {
+            collapsedSeasons.insert(season)
+        }
+        
+        guard let sectionIndex = sectionTypes.firstIndex(where: { sectionType in
+            if case .season(let seasonSection) = sectionType {
+                return seasonSection.season == season
+            }
+            
+            return false
+        }) else { return }
+        
+        tableView.reloadSections(IndexSet(integer: sectionIndex), with: .automatic)
     }
 }
 
 extension EpisodeListViewController: UITableViewDataSource{
     func numberOfSections(in tableView: UITableView) -> Int {
-        return SectionType.allCases.count
+        return sectionTypes.count
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        guard let section = SectionType(rawValue: section) else { return 0 }
-        
-        switch section {
+        switch sectionTypes[section] {
         case .search:
             return 1
-        case .episodes:
-            return episodes.count
+        case .season(let seasonSection):
+            return collapsedSeasons.contains(seasonSection.season) ? 0 : seasonSection.episodes.count
         case .loadMore:
             return canLoadMore ? 1 : 0
         }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let section = SectionType(rawValue: indexPath.section) else { return UITableViewCell() }
-        
-        switch section {
+        switch sectionTypes[indexPath.section] {
         case .search:
             return makeSearchCell(tableView: tableView, indexPath: indexPath)
-        case .episodes:
-            return makeEpisodeCell(tableView: tableView, indexPath: indexPath)
+        case .season(let seasonSection):
+            let episode = seasonSection.episodes[indexPath.row]
+            return makeEpisodeCell(tableView: tableView, indexPath: indexPath, episode: episode)
         case .loadMore:
             return makeLoadMoreCell(tableView: tableView, indexPath: indexPath)
         }
@@ -148,9 +198,8 @@ extension EpisodeListViewController: UITableViewDataSource{
         return cell
     }
     
-    private func makeEpisodeCell(tableView: UITableView, indexPath: IndexPath) -> UITableViewCell {
+    private func makeEpisodeCell(tableView: UITableView, indexPath: IndexPath, episode: Episode) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "EpisodeTableViewCell", for: indexPath) as! EpisodeTableViewCell
-        let episode = episodes[indexPath.row]
         cell.configure(with: episode)
         
         return cell
@@ -171,11 +220,37 @@ extension EpisodeListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         
-        guard let sectionType = SectionType(rawValue: indexPath.section), sectionType == .episodes else {
+        guard case .season(let seasonSection) = sectionTypes[indexPath.section] else {
             return
         }
         
-        let episode = episodes[indexPath.row]
+        let episode = seasonSection.episodes[indexPath.row]
         viewModel.didSelectEpisode(id: episode.id)
+    }
+    
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        guard case .season(let seasonSection) = sectionTypes[section] else {
+            return nil
+        }
+        
+        let isCollapse = collapsedSeasons.contains(seasonSection.season)
+        
+        let button = UIButton(type: .system)
+        button.tag = seasonSection.season
+        button.contentHorizontalAlignment = .leading
+        button.titleLabel?.font = .boldSystemFont(ofSize: 25)
+        button.addTarget(self, action: #selector(didTapSeasonHeader(_:)), for: .touchUpInside)
+        let title = String(format: String(localized: "episode.season.header.format"), seasonSection.season)
+        
+        var configuration = UIButton.Configuration.plain()
+        configuration.title = title
+        configuration.image = UIImage(systemName: isCollapse ? "chevron.right" : "chevron.down")
+        configuration.imagePlacement = .leading
+        configuration.imagePadding = 8
+        configuration.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 16, bottom: 6, trailing: 16)
+        
+        button.configuration = configuration
+        
+        return button
     }
 }
