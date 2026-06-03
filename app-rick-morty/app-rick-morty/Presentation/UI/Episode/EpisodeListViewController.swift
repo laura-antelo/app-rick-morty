@@ -47,7 +47,7 @@ class EpisodeListViewController: UIViewController {
     }
     
     private func setupView() {
-        navigationItem.title = "Episodios"
+        navigationItem.title = String(localized: "episodes.title")
     }
 
     private func setupTableView(){

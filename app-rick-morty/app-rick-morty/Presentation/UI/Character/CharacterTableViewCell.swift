@@ -27,12 +27,4 @@ class CharacterTableViewCell: UITableViewCell {
         nameLabel.text = character.name
         characterImageView.image = character.image
     }
-    
-    /*
-    func configure(characterId: Int){
-        nameLabel.text = "Personaje \(characterId)"
-        characterImageView.image = UIImage(systemName: "person.crop.square")
-    }
-     */
-    
 }

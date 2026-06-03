@@ -59,7 +59,7 @@ class CharacterDetailViewController: UIViewController {
     }
 
     private func setupView() {
-        navigationItem.title = "Detalle del personaje"
+        navigationItem.title = String(localized: "character.detail.title")
         setupExportButtons()
         updateFavoriteButton(isFavorite: false)
     }
@@ -111,10 +111,10 @@ class CharacterDetailViewController: UIViewController {
     
     private func updateTexts(with character: Character) {
         nameLabel.text = character.name
-        statusLabel.text = "Estado: \(character.status.displayText)"
-        speciesLabel.text = "Especie: \(character.species)"
-        typeLabel.text = character.type.isEmpty ? "" : "Tipo: \(character.type)"
-        genderLabel.text = "Género: \(character.gender)"
+        statusLabel.text = String(format: String(localized: "character.status.format"), character.status.displayText)
+        speciesLabel.text = String(format: String(localized: "character.species.format"), character.species)
+        typeLabel.text = character.type.isEmpty ? String(localized: "character.type.empty") : String(format: String(localized: "type.format"), character.type)
+        genderLabel.text = String(format: String(localized: "character.gender.format"), character.gender)
     }
     
     private func updateImages(with character: Character) {
@@ -134,11 +134,11 @@ class CharacterDetailViewController: UIViewController {
     }
     
     private func configureOriginCell(_ cell: LocationTableViewCell, origin: LocationReference) {
-        cell.configure(with: origin, title: "Origen")
+        cell.configure(with: origin, title: String(localized: "location.origin"))
     }
     
     private func configureLocationCell(_ cell: LocationTableViewCell, location: LocationReference) {
-        cell.configure(with: location, title: "Última ubicación")
+        cell.configure(with: location, title: String(localized: "location.latest"))
     }
     
     private func share(items: [Any]) {
@@ -150,9 +150,9 @@ class CharacterDetailViewController: UIViewController {
     }
     
     private func showExportError() {
-        let alertController = UIAlertController(title: "No se puede exportar", message: "El detalle todavía no etá cargado", preferredStyle: .alert)
+        let alertController = UIAlertController(title: String(localized: "export.error.title"), message: String(localized: "export.error.message"), preferredStyle: .alert)
         
-        alertController.addAction(UIAlertAction(title: "Aceptar", style: .default))
+        alertController.addAction(UIAlertAction(title: String(localized: "accept"), style: .default))
         
         present(alertController, animated: true)
     }
@@ -197,9 +197,9 @@ extension CharacterDetailViewController: UITableViewDataSource {
         
         switch section {
         case .locations:
-            return "Ubicaciones"
+            return String(localized: "locations.title")
         case .episodes:
-            return "Episodios"
+            return String(localized: "episodes.title")
         }
     }
     
@@ -257,11 +257,11 @@ private extension CharacterStatus {
     var displayText: String {
         switch self {
         case .alive:
-            return "Vivo"
+            return String(localized: "status.alive")
         case .dead:
-            return "Muerto"
+            return String(localized: "status.dead")
         case .unknown:
-            return "Desconocido"
+            return String(localized: "status.unknown")
         }
     }
 }

@@ -48,7 +48,7 @@ class EpisodeDetailViewController: UIViewController {
     }
     
     private func setupView() {
-        navigationItem.title = "Detalle del episodio"
+        navigationItem.title = String(localized: "episode.detail.title")
         setupExportButtons()
         updateFavoriteButton(isFavorite: false)
     }
@@ -89,10 +89,10 @@ class EpisodeDetailViewController: UIViewController {
     private func configure(with episode: Episode) {
         self.episode = episode
         nameLabel.text = episode.name
-        codeLabel.text = "Tempoprada \(episode.season) - Episodio \(episode.episodeNumber)"
-        airDateLabel.text = "Fecha de emisión: \(episode.airDate)"
-        ratingLabel.text = "Puntuación: \(String(format: "%.1f", episode.rating)) de 10 - \(episode.voteCount) valoraciones"
-        synopsisLabel.text = episode.synopsis.isEmpty ? "Sin sinopsis disponible" : episode.synopsis
+        codeLabel.text = String(format: String(localized: "episode.season_episode.format"), episode.season, episode.episodeNumber)
+        airDateLabel.text = String(format: String(localized: "episode.air_date.format"), episode.airDate)
+        ratingLabel.text = String(format: String(localized: "episode.rating.format"), episode.rating, episode.voteCount)
+        synopsisLabel.text = episode.synopsis.isEmpty ? String(localized: "episode.synopsis.empty") : episode.synopsis
         episodeImageView.image = episode.image ?? UIImage(systemName: "tv")
     }
     
@@ -117,9 +117,9 @@ class EpisodeDetailViewController: UIViewController {
     }
     
     private func showExportError() {
-        let alertController = UIAlertController(title: "No se puede exportar", message: "El detalle todavía no etá cargado", preferredStyle: .alert)
+        let alertController = UIAlertController(title: String(localized: "export.error.title"), message: String(localized: "export.error.message"), preferredStyle: .alert)
         
-        alertController.addAction(UIAlertAction(title: "Aceptar", style: .default))
+        alertController.addAction(UIAlertAction(title: String(localized: "accept"), style: .default))
         
         present(alertController, animated: true)
     }
@@ -153,7 +153,7 @@ extension EpisodeDetailViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return "Personajes"
+        return String(localized: "characters.title")
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {

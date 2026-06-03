@@ -46,7 +46,7 @@ class LocationListViewController: UIViewController {
     }
     
     private func setupView() {
-        navigationItem.title = "Ubicaciones"
+        navigationItem.title = String(localized: "locations.title")
     }
     
     private func setupTableView(){
