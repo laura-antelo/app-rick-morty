@@ -13,15 +13,26 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     private lazy var apiClient: APIClient = URLSessionAPIClient()
     private lazy var imdbApiClient: IMDbAPIClient = URLSessionIMDbAPIClient()
+    private lazy var translationAPIClient: TranslationAPIClient = URLSessionTranslationAPIClient()
     
     private lazy var diskCache: DiskCache = .shared
     
+    private lazy var languageProvider: AppLanguageProvider = DefaultAppLanguageProvider()
     private lazy var imageRepository: ImageRepository = DefaultImageRepository(api: apiClient)
     
+    
+    private lazy var translationRepository: TranslationRepository = CacheTranslationDecorator(decoratedRepository: MyMemoryTranslationRepository(api: translationAPIClient), cache: diskCache)
     private lazy var imdbEpisodeRepository: IMDbEpisodeRepository = CacheIMDbEpisodeDecorator(decoratedRepository: DefaultIMDbEpisodeRepository(api: imdbApiClient, imageRepository: imageRepository), cache: diskCache)
-    private lazy var characterRepository: CharacterRepository = CacheCharacterDecorator(decoratedRepository: DefaultCharacterRepository(api: apiClient), cache: diskCache)
-    private lazy var episodeRepository: EpisodeRepository = EnrichedEpisodeRepository(episodeRepository: CacheEpisodeDecorator(decoratedRepository: DefaultEpisodeRepository(api: apiClient), cache: diskCache), imdbEpisodeRepository: imdbEpisodeRepository)
-    private lazy var locationRepository: LocationRepository = CacheLocationDecorator(decoratedRepository: DefaultLocationRepository(api: apiClient), cache: diskCache)
+    
+    
+    private lazy var baseCharacterRepository: CharacterRepository = CacheCharacterDecorator(decoratedRepository: DefaultCharacterRepository(api: apiClient), cache: diskCache)
+    private lazy var characterRepository: CharacterRepository = TranslatedCharacterRepository(decoratedRepository: baseCharacterRepository, translationRepository: translationRepository, languageProvider: languageProvider)
+    
+    private lazy var baseEpisodeRepository: EpisodeRepository = EnrichedEpisodeRepository(episodeRepository: CacheEpisodeDecorator(decoratedRepository: DefaultEpisodeRepository(api: apiClient), cache: diskCache), imdbEpisodeRepository: imdbEpisodeRepository)
+    private lazy var episodeRepository: EpisodeRepository = TranslatedEpisodeRepository(decoratedRepository: baseEpisodeRepository, translationRepository: translationRepository, languageProvider: languageProvider)
+    
+    private lazy var baseLocationRepository: LocationRepository = CacheLocationDecorator(decoratedRepository: DefaultLocationRepository(api: apiClient), cache: diskCache)
+    private lazy var locationRepository: LocationRepository = TranslatedLocationRepository(decoratedRepository: baseLocationRepository, translationRepository: translationRepository, languageProvider: languageProvider)
     
     private lazy var favoriteRepository: FavoriteRepository = DefaultFavoriteRepository()
     
