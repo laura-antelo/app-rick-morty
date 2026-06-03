@@ -19,6 +19,7 @@ class EpisodeListViewController: UIViewController {
     private var episodes: [Episode] = []
     private var sectionTypes: [SectionType] = [.search, .loadMore]
     private var collapsedSeasons: Set<Int> = []
+    private var sortOption: EpisodeSortOption = .chapterOrder
     
     private var currentSearchText: String = ""
     private var canLoadMore = false
@@ -33,6 +34,12 @@ class EpisodeListViewController: UIViewController {
     private struct SeasonSection {
         let season: Int
         let episodes: [Episode]
+    }
+    
+    private enum EpisodeSortOption {
+        case chapterOrder
+        case ratingDescending
+        case ratingAscending
     }
     
     init(viewModel: EpisodeListViewModel) {
@@ -56,8 +63,9 @@ class EpisodeListViewController: UIViewController {
     
     private func setupView() {
         navigationItem.title = String(localized: "episodes.title")
+        updateSortButton()
     }
-
+    
     private func setupTableView(){
         tableView.register(UINib(nibName: "SearchTableViewCell", bundle: nil), forCellReuseIdentifier: "SearchTableViewCell")
         tableView.register(UINib(nibName: "EpisodeTableViewCell", bundle: nil), forCellReuseIdentifier: "EpisodeTableViewCell")
@@ -85,6 +93,33 @@ class EpisodeListViewController: UIViewController {
                 self?.updateFavoriteFilter(isActive)
             }
             .store(in: &cancellables)
+    }
+    
+    private func updateSortButton() {
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "arrow.up.arrow.down"), menu: makeSortMenu())
+    }
+    
+    private func makeSortMenu() -> UIMenu {
+        return UIMenu(
+            title: String(localized: "episode.sort.menu.title"),
+            children: [
+                UIAction(title: String(localized: "episode.sort.chapter_order"), state: sortOption == .chapterOrder ? .on : .off) { [weak self] _ in
+                    self?.updateSortOption(.chapterOrder)
+                },
+                UIAction(title: String(localized: "episode.sort.rating_asc"), state: sortOption == .ratingAscending ? .on : .off) { [weak self] _ in
+                    self?.updateSortOption(.ratingAscending)
+                },
+                UIAction(title: String(localized: "episode.sort.rating_desc"), state: sortOption == .ratingDescending ? .on : .off) { [weak self] _ in
+                    self?.updateSortOption(.ratingDescending)}
+            ]
+        )
+    }
+    
+    private func updateSortOption (_ sortOption: EpisodeSortOption) {
+        self.sortOption = sortOption
+        self.sectionTypes = makeSectionTypes(from: episodes)
+        updateSortButton()
+        tableView.reloadData()
     }
     
     private func updateEpisodes(_ episodes: [Episode]) {
@@ -115,13 +150,7 @@ class EpisodeListViewController: UIViewController {
         
         let seasonSections = groupedEpisodes
             .map { season, episodes in
-                SeasonSection(season: season, episodes: episodes.sorted { first, second in
-                    if first.episodeNumber == second.episodeNumber {
-                        return first.id < second.id
-                    }
-                    
-                    return first.episodeNumber < second.episodeNumber
-                })
+                SeasonSection(season: season, episodes: sortedEpisodes(episodes))
             }
             .sorted { first, second in
                 first.season < second.season
@@ -132,6 +161,50 @@ class EpisodeListViewController: UIViewController {
         sections.append(.loadMore)
         
         return sections
+    }
+    
+    private func sortedEpisodes(_ episodes: [Episode]) -> [Episode] {
+        switch sortOption {
+        case .chapterOrder:
+            return episodes.sorted { first, second in
+                if first.episodeNumber == second.episodeNumber {
+                    return first.id < second.id
+                }
+                
+                return first.episodeNumber < second.episodeNumber
+            }
+        case .ratingAscending:
+            return episodes.sorted { first, second in
+                compareByRating(first, second, ascending: true)
+            }
+        case .ratingDescending:
+            return episodes.sorted { first, second in
+                compareByRating(first, second, ascending: false)
+            }
+        }
+    }
+    
+    private func compareByRating(_ first: Episode, _ second: Episode, ascending: Bool) -> Bool {
+        let firstHasRating = first.rating > 0
+        let secondHasRating = second.rating > 0
+        
+        if firstHasRating != secondHasRating {
+            return firstHasRating == ascending
+        }
+        
+        if first.rating == second.rating {
+            if first.episodeNumber == second.episodeNumber {
+                return first.id < second.id
+            }
+            
+            return first.episodeNumber < second.episodeNumber
+        }
+        
+        if ascending {
+            return first.rating < second.rating
+        } else {
+            return first.rating > second.rating
+        }
     }
     
     @objc private func didTapSeasonHeader(_ sender: UIButton) {
