@@ -2,6 +2,10 @@
 
 Aplicación nativa desarrollada con **Swift y UIKit** para explorar personajes, episodios y ubicaciones del universo de *Rick and Morty*.
 
+<p align="center"> <img src="./screenshots-app/episode-sorting.png" width="16%" alt="Episodios y sus filtros"> <img src="./screenshots-app/character-detail.png" width="16%" alt="Detalles de personaje"> <img src="./screenshots-app/character-search.png" width="16%" alt="Búsqueda de episodios"> <img src="./screenshots-app/location-detail.png" width="16%" alt="Detalle de ubicación"> <img src="./screenshots-app/character-favorites.png" width="16%" alt="Filtrado de personajes favoritos"> <img src="./screenshots-app/english-app.png" width="16%" alt="Aplicación en inglés"> </p>
+
+> Proyecto formativo durante mis prácticas en **Plexus Tech**, bajo la mentoría de un desarrollador iOS senior. El desarrollo partió de una serie de requisitos definidos y revisados por el mentor, que también realizó seguimiento de la calidad, limpieza y organización del código.
+
 ## ¿Qué permite hacer?
 
 La barra inferior divide la aplicación en tres apartados:
@@ -33,5 +37,3 @@ APIs utilizadas:
 * [The Rick and Morty API](https://rickandmortyapi.com/)
 * [IMDb API](https://imdbapi.dev/)
 * Servicio de traducción para el contenido remoto
-
-> Proyecto formativo durante mis prácticas en **Plexus Tech**, bajo la mentoría de un desarrollador iOS senior. El desarrollo partió de una serie de requisitos definidos y revisados por el mentor, que también realizó seguimiento de la calidad, limpieza y organización del código.
