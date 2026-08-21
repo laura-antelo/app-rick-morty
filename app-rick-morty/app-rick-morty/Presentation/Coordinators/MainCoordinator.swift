@@ -30,9 +30,9 @@ final class DefaultMainCoordinator: MainCoordinator {
         let characterViewController = characterCoordinator.start()
         let locationViewController = locationCoordinator.start()
         
-        let episodeNavigationController = makeNavigationController(rootViewController: episodeViewController, title: "Episodios", image: UIImage(systemName: "tv"))
-        let characterNavigationController = makeNavigationController(rootViewController: characterViewController, title: "Personajes", image: UIImage(systemName: "person.3"))
-        let locationNavigationController = makeNavigationController(rootViewController: locationViewController, title: "Ubicaciones", image: UIImage(systemName: "globe.europe.africa"))
+        let episodeNavigationController = makeNavigationController(rootViewController: episodeViewController, title: String(localized: "episodes.title"), image: UIImage(systemName: "tv"))
+        let characterNavigationController = makeNavigationController(rootViewController: characterViewController, title: String(localized: "characters.title"), image: UIImage(systemName: "person.3"))
+        let locationNavigationController = makeNavigationController(rootViewController: locationViewController, title: String(localized: "locations.title"), image: UIImage(systemName: "globe.europe.africa"))
         
         return MainTabBarController(initialViewControllers: [episodeNavigationController, characterNavigationController, locationNavigationController])
     }

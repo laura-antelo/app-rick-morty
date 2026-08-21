@@ -16,6 +16,7 @@ class LoadMoreTableViewCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         
+        loadMoreButton.setTitle(String(localized: "button.load_more"), for: .normal)
     }
 
     override func prepareForReuse() {

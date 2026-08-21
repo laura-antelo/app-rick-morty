@@ -19,6 +19,7 @@ class SearchTableViewCell: UITableViewCell {
         super.awakeFromNib()
         
         searchBar.delegate = self
+        searchBar.placeholder = String(localized: "search.placeholder")
     }
     
     override func prepareForReuse() {

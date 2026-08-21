@@ -53,11 +53,11 @@ final class DetailExportTextBuilder {
     private func statusText(_ status: CharacterStatus) -> String {
         switch status {
         case .alive:
-            return "Vivo"
+            return String(localized: "status.alive")
         case .dead:
-            return "Muerto"
+            return String(localized: "status.dead")
         case .unknown:
-            return "Desconocido"
+            return String(localized: "status.unknown")
         }
     }
 }

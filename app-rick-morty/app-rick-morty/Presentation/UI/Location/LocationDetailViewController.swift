@@ -45,7 +45,7 @@ class LocationDetailViewController: UIViewController {
     }
     
     private func setupView() {
-        navigationItem.title = "Detalle de la ubicación"
+        navigationItem.title = String(localized: "location.detail.title")
         updateFavoriteButton(isFavorite: false)
     }
     
@@ -86,8 +86,8 @@ class LocationDetailViewController: UIViewController {
     private func updateTexts(with location: Location) {
         self.location = location
         nameLabel.text = location.name
-        typeLabel.text = "Tipo: \(location.type)"
-        dimensionLabel.text = "Dimensión: \(location.dimension)"
+        typeLabel.text = String(format: String(localized: "type.format"), location.type)
+        dimensionLabel.text = String(format: String(localized: "location.dimension.format"),location.dimension)
     }
     
     private func updateRelatedResidents(_ residents: [Character]){
@@ -111,9 +111,9 @@ class LocationDetailViewController: UIViewController {
     }
     
     private func showExportError() {
-        let alertController = UIAlertController(title: "No se puede exportar", message: "El detalle todavía no etá cargado", preferredStyle: .alert)
+        let alertController = UIAlertController(title: String(localized: "export.error.title"), message: String(localized: "export.error.message"), preferredStyle: .alert)
         
-        alertController.addAction(UIAlertAction(title: "Aceptar", style: .default))
+        alertController.addAction(UIAlertAction(title: String(localized: "accept"), style: .default))
         
         present(alertController, animated: true)
     }
@@ -147,7 +147,7 @@ extension LocationDetailViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return "Residentes"
+        return String(localized: "location.residents.format")
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {

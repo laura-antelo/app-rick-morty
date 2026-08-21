@@ -32,6 +32,6 @@ class EpisodeTableViewCell: UITableViewCell {
         nameLabel.text = episode.name
         codeLabel.text = episode.code
         episodeImageView.image = episode.image ?? UIImage(systemName: "tv")
-        descriptionLabel.text = episode.synopsis.isEmpty ? "Sin sinopsis disponible" : episode.synopsis
+        descriptionLabel.text = episode.synopsis.isEmpty ? String(localized: "episode.synopsis.empty") : episode.synopsis
     }
 }

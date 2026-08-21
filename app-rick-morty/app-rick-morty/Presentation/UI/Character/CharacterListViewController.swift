@@ -46,7 +46,7 @@ class CharacterListViewController: UIViewController {
     }
     
     private func setupView() {
-        navigationItem.title = "Personajes"
+        navigationItem.title = String(localized: "characters.title")
     }
     
     private func setupTableView(){
